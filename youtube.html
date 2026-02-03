@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YT Grabber - YouTube Video & Audio Downloader</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff0050;
+            --secondary: #00d9ff;
+            --dark: #0a0e27;
+            --darker: #050814;
+            --light: #ffffff;
+            --accent: #7c3aed;
+            --success: #00ff88;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 0, 80, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 217, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(124, 58, 237, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+
+        /* Noise texture overlay */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        header {
+            padding: 2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .logo {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -2px;
+            animation: glitch 3s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 90%, 100% { transform: translate(0); }
+            92% { transform: translate(-2px, 2px); }
+            94% { transform: translate(2px, -2px); }
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            color: var(--secondary);
+            opacity: 0.7;
+            font-family: 'Space Mono', monospace;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 5%;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--light) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -3px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 3rem;
+            font-weight: 300;
+        }
+
+        /* Download Box */
+        .download-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 3rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            margin-bottom: 4rem;
+            animation: fadeInUp 0.8s ease-out 0.2s backwards;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .download-box:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 0, 80, 0.3);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        #videoUrl {
+            flex: 1;
+            padding: 1.2rem 1.5rem;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            color: var(--light);
+            font-family: 'Space Mono', monospace;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        #videoUrl:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(255, 0, 80, 0.2);
+        }
+
+        #videoUrl::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn {
+            padding: 1.2rem 2.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Outfit', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: var(--light);
+            box-shadow: 0 10px 30px rgba(255, 0, 80, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(255, 0, 80, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Format Options */
+        .format-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .format-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .format-card:hover {
+            border-color: var(--secondary);
+            background: rgba(0, 217, 255, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .format-card.selected {
+            border-color: var(--primary);
+            background: rgba(255, 0, 80, 0.1);
+        }
+
+        .format-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .format-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .format-desc {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Features Section */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .feature-card {
+            padding: 2rem;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s ease;
+            animation: fadeInUp 0.8s ease-out backwards;
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.3s; }
+        .feature-card:nth-child(2) { animation-delay: 0.4s; }
+        .feature-card:nth-child(3) { animation-delay: 0.5s; }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--secondary);
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .feature-card:hover .feature-icon {
+            animation: spin 0.6s ease;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .feature-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .feature-desc {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin-loader 0.8s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin-loader {
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner.active {
+            display: block;
+        }
+
+        /* Status Message */
+        .status-message {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+            font-weight: 500;
+            display: none;
+        }
+
+        .status-message.show {
+            display: block;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .status-message.success {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .status-message.error {
+            background: rgba(255, 0, 80, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .status-message.info {
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid var(--secondary);
+            color: var(--secondary);
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem 5%;
+            margin-top: 6rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.9rem;
+        }
+
+        footer strong {
+            color: var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .download-box {
+                padding: 2rem 1.5rem;
+            }
+
+            .format-options {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="noise"></div>
+
+    <header>
+        <div class="logo">YT_GRABBER</div>
+        <div class="tagline">[ fast • free • forever ]</div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Download Karo.<br>Aasani Se.</h1>
+            <p class="subtitle">YouTube videos aur audio ko directly download karo. Koi signup nahi, koi limit nahi.</p>
+        </section>
+
+        <div class="download-box">
+            <div class="input-group">
+                <input 
+                    type="text" 
+                    id="videoUrl" 
+                    placeholder="https://www.youtube.com/watch?v=..."
+                    autocomplete="off"
+                >
+                <button class="btn btn-primary" id="fetchBtn">
+                    🔍 Fetch
+                </button>
+            </div>
+
+            <div class="format-options" id="formatOptions" style="display: none;">
+                <div class="format-card" data-format="video-high">
+                    <div class="format-icon">🎥</div>
+                    <div class="format-title">High Quality Video</div>
+                    <div class="format-desc">MP4 • Best quality</div>
+                </div>
+                <div class="format-card" data-format="video-medium">
+                    <div class="format-icon">📹</div>
+                    <div class="format-title">Medium Quality Video</div>
+                    <div class="format-desc">MP4 • Balanced</div>
+                </div>
+                <div class="format-card" data-format="audio">
+                    <div class="format-icon">🎵</div>
+                    <div class="format-title">Audio Only</div>
+                    <div class="format-desc">MP3 • Music</div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" id="downloadBtn" style="display: none; width: 100%; margin-top: 1.5rem;">
+                ⬇️ Download Karo
+            </button>
+
+            <div class="spinner" id="spinner"></div>
+            <div class="status-message" id="statusMessage"></div>
+        </div>
+
+        <section class="features">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-title">Lightning Fast</div>
+                <div class="feature-desc">High-speed downloads with optimized servers. Apne videos ko seconds mein download karo.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <div class="feature-title">Multiple Formats</div>
+                <div class="feature-desc">Video (MP4) aur Audio (MP3) dono formats available. Quality options bhi choose kar sakte ho.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-title">100% Safe & Private</div>
+                <div class="feature-desc">No tracking, no data collection. Aapka data completely safe rehta hai. No signup required.</div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p><strong>Disclaimer:</strong> Sirf personal use ke liye. Copyrighted content ko download karna illegal ho sakta hai.</p>
+        <p style="margin-top: 1rem; opacity: 0.6;">Made with ❤️ in India • © 2026 YT Grabber</p>
+    </footer>
+
+    <script>
+        // Elements
+        const videoUrlInput = document.getElementById('videoUrl');
+        const fetchBtn = document.getElementById('fetchBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const formatOptions = document.getElementById('formatOptions');
+        const spinner = document.getElementById('spinner');
+        const statusMessage = document.getElementById('statusMessage');
+        const formatCards = document.querySelectorAll('.format-card');
+
+        let selectedFormat = 'video-high';
+        let videoInfo = null;
+
+        // Format card selection
+        formatCards.forEach(card => {
+            card.addEventListener('click', () => {
+                formatCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedFormat = card.dataset.format;
+            });
+        });
+
+        // Show status message
+        function showStatus(message, type = 'info') {
+            statusMessage.textContent = message;
+            statusMessage.className = 'status-message show ' + type;
+            setTimeout(() => {
+                statusMessage.classList.remove('show');
+            }, 5000);
+        }
+
+        // Validate YouTube URL
+        function isValidYouTubeUrl(url) {
+            const pattern = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
+            return pattern.test(url);
+        }
+
+        // Extract Video ID from URL
+        function extractVideoId(url) {
+            const patterns = [
+                /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/)([^&\n?#]+)/,
+                /^[a-zA-Z0-9_-]{11}$/
+            ];
+            
+            for (let pattern of patterns) {
+                const match = url.match(pattern);
+                if (match) return match[1] || match[0];
+            }
+            return null;
+        }
+
+        // Fetch video info
+        fetchBtn.addEventListener('click', async () => {
+            const url = videoUrlInput.value.trim();
+            
+            if (!url) {
+                showStatus('❌ Please enter a YouTube URL', 'error');
+                return;
+            }
+
+            if (!isValidYouTubeUrl(url)) {
+                showStatus('❌ Invalid YouTube URL. Please check and try again.', 'error');
+                return;
+            }
+
+            const videoId = extractVideoId(url);
+            if (!videoId) {
+                showStatus('❌ Could not extract video ID from URL', 'error');
+                return;
+            }
+
+            // Show loading
+            spinner.classList.add('active');
+            fetchBtn.disabled = true;
+            formatOptions.style.display = 'none';
+            downloadBtn.style.display = 'none';
+            showStatus('🔍 Fetching video information...', 'info');
+
+            try {
+                // Simulate API call (Replace this with actual YouTube API or backend service)
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                // Mock video info
+                videoInfo = {
+                    id: videoId,
+                    title: 'Video Title Here',
+                    thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+                    url: url
+                };
+
+                // Show format options
+                formatOptions.style.display = 'grid';
+                downloadBtn.style.display = 'block';
+                formatCards[0].classList.add('selected'); // Select first option by default
+                selectedFormat = 'video-high';
+                
+                showStatus('✅ Video found! Select your format and click Download.', 'success');
+            } catch (error) {
+                showStatus('❌ Error fetching video. Please try again.', 'error');
+                console.error(error);
+            } finally {
+                spinner.classList.remove('active');
+                fetchBtn.disabled = false;
+            }
+        });
+
+        // Download video
+        downloadBtn.addEventListener('click', async () => {
+            if (!videoInfo) {
+                showStatus('❌ Please fetch video information first', 'error');
+                return;
+            }
+
+            showStatus('⏳ Starting download... Please wait.', 'info');
+            spinner.classList.add('active');
+            downloadBtn.disabled = true;
+
+            try {
+                // NOTE: Actual YouTube video downloading requires a backend service
+                // This is a demonstration of the frontend flow
+                
+                // For a working solution, you would need:
+                // 1. Backend API (Node.js with ytdl-core, Python with yt-dlp, etc.)
+                // 2. API endpoint like: POST /api/download with { videoId, format }
+                // 3. Response with download URL or streaming the file
+
+                // Example backend call:
+                /*
+                const response = await fetch('/api/download', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        videoId: videoInfo.id,
+                        format: selectedFormat
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Create download link
+                    const a = document.createElement('a');
+                    a.href = data.downloadUrl;
+                    a.download = data.filename;
+                    a.click();
+                    showStatus('✅ Download started!', 'success');
+                } else {
+                    showStatus('❌ Download failed: ' + data.error, 'error');
+                }
+                */
+
+                // For demonstration, show info message
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                showStatus(
+                    '⚠️ DEMO MODE: To enable actual downloads, you need to connect this to a backend service. ' +
+                    'Check the code comments for implementation details.',
+                    'info'
+                );
+
+                // Show implementation instructions
+                console.log(`
+                    🎯 TO ENABLE REAL DOWNLOADS:
+                    
+                    1. Create a backend API (Node.js recommended):
+                       npm install express ytdl-core cors
+                    
+                    2. Backend code example:
+                       const express = require('express');
+                       const ytdl = require('ytdl-core');
+                       const app = express();
+                       
+                       app.post('/api/download', async (req, res) => {
+                           const { videoId, format } = req.body;
+                           const url = 'https://youtube.com/watch?v=' + videoId;
+                           
+                           const info = await ytdl.getInfo(url);
+                           res.header('Content-Disposition', 'attachment; filename="video.mp4"');
+                           ytdl(url, { quality: 'highest' }).pipe(res);
+                       });
+                       
+                       app.listen(3000);
+                    
+                    3. Update the frontend fetch call to point to your backend
+                    4. Deploy your backend to a hosting service
+                    
+                    Current video ID: ${videoInfo.id}
+                    Selected format: ${selectedFormat}
+                `);
+
+            } catch (error) {
+                showStatus('❌ Download error: ' + error.message, 'error');
+                console.error(error);
+            } finally {
+                spinner.classList.remove('active');
+                downloadBtn.disabled = false;
+            }
+        });
+
+        // Enter key support
+        videoUrlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                fetchBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
