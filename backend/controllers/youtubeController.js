@@ -1,6 +1,5 @@
 const ytdl = require('@distube/ytdl-core');
 const sanitizeFilename = require('../utils/sanitizeFilename');
-const ytdl = require('@distube/ytdl-core');
 
 const agent = ytdl.createAgent();
 

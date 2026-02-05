@@ -1,4 +1,4 @@
-const { getDB } = require("../../config/connection");
+const { getDB } = require("../../connection");
 
 function getUserCollection() {
   const db = getDB();
