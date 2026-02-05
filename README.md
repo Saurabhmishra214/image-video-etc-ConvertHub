@@ -120,7 +120,7 @@ mv index.html public/
 firstly make sure you have .env file in root directory and it must contain MONGO_URI and user.
 
 
-
+```
 require("dotenv").config();
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
@@ -150,7 +150,7 @@ function getDB() {
 
 module.exports = { connectDB, getDB };
 
-
+```
 and then create models in modules folder 
 
 
