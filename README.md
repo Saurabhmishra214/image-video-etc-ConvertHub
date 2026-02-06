@@ -61,6 +61,7 @@ mv index.html public/
 
 
 *** project ka structure kaisa hona chahiye:**
+```
 |
 |---backend
 |     |____controllers 
@@ -96,30 +97,30 @@ mv index.html public/
 |____tsconfig.node.json
 |____tsconfig.json
 |____vite.config.ts
+```
 
-
-
-Controller folder me vo file rahegi jo decide karti hai ki request aane par kya kaam karna hai.
-modules folder me database me jitane bhi table banege unke liye alag se controller or routes file hongi.
-user folder me user table se related routes controller and table se connection karne ka code rahega.
-routes folder me code rahega ki kis url ki request pe kya function perform ho isi ke andar hum log api ki file bhi create karenge.
-utils folder me kuch extra chije rahengi jaise password validation ke liye ya koi dusra input validation ke liye
-node_modules folder me sabhi package install hote hai 
-assets folder me jitane bhi css or js se related file hogi jo ki frontend ke liye hai vo rahegi.
-components folder me humare project jo cards hai unke naam se folder banege or un folder ke andar sab alag alag kaam karenge. isame ek common naam ka folder hoga jaisi kuch chije hongi jo ab me common ho vo is folder me hongi taki sabko alag alag na likhna ho
-Context folder ka use hota hai global data store karne aur share karne ke liye.
-lib folder assets ki tarah hai pr hum isame sirf typescrit se related file use karenge.
-pages folder ke andar jo humare components folder ke andar component banye honge unhe yaha combine karke apne us perticular page ko design karenge
-App.tsx React application ka main root component hota hai.Yeh decide karta hai ki app ka main layout kaisa hoga.Kaun sa page kab open hoga yeh yaha define hota hai.Yeh poore React app ko assemble karta hai.
-main.tsx React app ka starting entry point hota hai. React ko HTML page se connect karta hai. App.tsx ko render karta hai
-
+```
+1. Controller folder me vo file rahegi jo decide karti hai ki request aane par kya kaam karna hai.
+2. modules folder me database me jitane bhi table banege unke liye alag se controller or routes file hongi.
+3. user folder me user table se related routes controller and table se connection karne ka code rahega.
+4. routes folder me code rahega ki kis url ki request pe kya function perform ho isi ke andar hum log api ki file bhi create karenge.
+5. utils folder me kuch extra chije rahengi jaise password validation ke liye ya koi dusra input validation ke liye
+6. node_modules folder me sabhi package install hote hai 
+7. assets folder me jitane bhi css or js se related file hogi jo ki frontend ke liye hai vo rahegi.
+8. components folder me humare project jo cards hai unke naam se folder banege or un folder ke andar sab alag alag kaam karenge. isame ek common naam ka folder hoga jaisi kuch chije hongi jo ab me common ho vo is folder me hongi taki sabko alag alag na likhna ho
+9. Context folder ka use hota hai global data store karne aur share karne ke liye.
+10. lib folder assets ki tarah hai pr hum isame sirf typescrit se related file use karenge.
+11. pages folder ke andar jo humare components folder ke andar component banye honge unhe yaha combine karke apne us perticular page ko design karenge
+12. App.tsx React application ka main root component hota hai.Yeh decide karta hai ki app ka main layout kaisa hoga.Kaun sa page kab open hoga yeh yaha define hota hai.Yeh poore React app ko assemble karta hai.
+13. main.tsx React app ka starting entry point hota hai. React ko HTML page se connect karta hai. App.tsx ko render karta hai
+```
 
 ***Database connection code: ***
 
 firstly make sure you have .env file in root directory and it must contain MONGO_URI and user.
 
 
-
+```
 require("dotenv").config();
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
@@ -149,7 +150,7 @@ function getDB() {
 
 module.exports = { connectDB, getDB };
 
-
+```
 and then create models in modules folder 
 
 
