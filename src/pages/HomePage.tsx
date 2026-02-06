@@ -1,5 +1,5 @@
 import { Image, Video, FileText, Music, Search, Zap, Shield, Clock } from 'lucide-react';
-import { ToolCard } from '../components/ToolCard';
+import { ToolCard } from '../components/common/ToolCard';
 import styles from './HomePage.module.css';
 
 interface HomePageProps {
