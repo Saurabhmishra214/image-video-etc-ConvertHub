@@ -1,6 +1,6 @@
 import { useRef, useState, type DragEvent } from 'react';
 import { Upload, X, FileIcon } from 'lucide-react';
-import styles from './FileUpload.module.css';
+import styles from '../../assets/FileUpload.module.css';
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;

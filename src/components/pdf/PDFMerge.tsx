@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Download, Plus, Trash2 } from 'lucide-react';
 import { ToolLayout } from '../common/ToolLayout';
 import { ProcessingStatus } from '../common/ProcessingStatus';
-import styles from './ToolPage.module.css';
+import styles from '../../assets/ToolPage.module.css';
 
 interface PDFMergeProps {
   onBack: () => void;

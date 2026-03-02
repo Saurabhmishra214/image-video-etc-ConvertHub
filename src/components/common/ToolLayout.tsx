@@ -1,6 +1,6 @@
 import { type ReactNode } from 'react';
 import { ArrowLeft } from 'lucide-react';
-import styles from './ToolLayout.module.css';
+import styles from '../../assets/ToolLayout.module.css';
 
 interface ToolLayoutProps {
   title: string;
