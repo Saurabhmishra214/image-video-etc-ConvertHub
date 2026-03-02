@@ -1,42 +1,26 @@
-import { useState } from 'react';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { Header } from './components/common/Header';
-import { Footer } from './components/common/Footer';
-import { HomePage } from './pages/homePage';
-import { ImageCompress } from './components/image/ImageCompress';
-import { PDFMerge } from './components/pdf/PDFMerge';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { HomePage } from './pages/HomePage';
+import { LandingPage } from './pages/LandingPage';
+import LiveMatchPage from './pages/LiveMatch/live';
+
+type DefaultPage = 'home' | 'landing';
+const DEFAULT_PAGE: DefaultPage = 'landing';
 
 function App() {
-  const [currentTool, setCurrentTool] = useState<string | null>(null);
-
-  const handleToolSelect = (toolId: string) => {
-    setCurrentTool(toolId);
-    window.scrollTo(0, 0);
-  };
-
-  const handleBackToHome = () => {
-    setCurrentTool(null);
-    window.scrollTo(0, 0);
-  };
-
-  const renderTool = () => {
-    switch (currentTool) {
-      case 'image-compress':
-        return <ImageCompress onBack={handleBackToHome} />;
-      case 'pdf-merge':
-        return <PDFMerge onBack={handleBackToHome} />;
-      default:
-        return <HomePage onToolSelect={handleToolSelect} />;
-    }
-  };
+  const defaultPageElement = DEFAULT_PAGE === 'home' ? <HomePage /> : <LandingPage />;
 
   return (
     <ThemeProvider>
-      <Header />
-      <main>
-        {renderTool()}
-      </main>
-      <Footer />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={defaultPageElement} />
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/landing" element={<LandingPage />} />
+          <Route path="/live" element={<LiveMatchPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
     </ThemeProvider>
   );
 }

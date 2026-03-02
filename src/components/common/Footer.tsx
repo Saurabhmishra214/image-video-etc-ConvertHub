@@ -1,5 +1,5 @@
 import { Github, Twitter, Mail } from 'lucide-react';
-import styles from './Footer.module.css';
+import styles from '../../assets/Footer.module.css';
 
 export const Footer = () => {
   return (

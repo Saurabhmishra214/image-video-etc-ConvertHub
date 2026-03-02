@@ -4,7 +4,7 @@ import { Download } from 'lucide-react';
 import { ToolLayout } from '../common/ToolLayout';
 import { FileUpload } from '../common/FileUpload';
 import { ProcessingStatus } from '../common/ProcessingStatus';
-import styles from './ToolPage.module.css';
+import styles from '../../assets/ToolPage.module.css';
 
 interface ImageCompressProps {
   onBack: () => void;

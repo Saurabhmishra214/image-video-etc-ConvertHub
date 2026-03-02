@@ -1,5 +1,5 @@
 import { type LucideIcon } from 'lucide-react';
-import styles from './ToolCard.module.css';
+import styles from '../../assets/ToolCard.module.css';
 
 interface ToolCardProps {
   icon: LucideIcon;
