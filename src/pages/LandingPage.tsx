@@ -37,6 +37,8 @@ export const LandingPage = () => {
         <p style={{ margin: 0, color: 'var(--text-secondary)' }}>
           Open live match page
         </p>
+
+        <h1>hello</h1>
       </Link>
       </div>
       <Footer />
