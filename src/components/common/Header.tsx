@@ -1,7 +1,7 @@
 import { Moon, Sun, Menu, X } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useState } from 'react';
-import styles from './Header.module.css';
+import styles from '../../assets/Header.module.css';
 
 export const Header = () => {
   const { theme, toggleTheme } = useTheme();

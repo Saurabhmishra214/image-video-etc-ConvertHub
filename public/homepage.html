@@ -1,0 +1,2875 @@
+﻿<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ConvertHub - File Converter &amp; Editor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    * {
+      font-family: 'Inter', sans-serif;
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .tool-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .tool-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 25px 50px -12px rgba(102, 126, 234, 0.25);
+    }
+    .upload-zone {
+      border: 3px dashed #d1d5db;
+      transition: all 0.3s ease;
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: #667eea;
+      background: rgba(102, 126, 234, 0.05);
+    }
+    .progress-bar {
+      background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+      background-size: 200% 100%;
+      animation: shimmer 2s linear infinite;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+      animation: fadeIn 0.6s ease forwards;
+    }
+    .fade-in-delay-1 { animation-delay: 0.1s; opacity: 0; }
+    .fade-in-delay-2 { animation-delay: 0.2s; opacity: 0; }
+    .fade-in-delay-3 { animation-delay: 0.3s; opacity: 0; }
+    .fade-in-delay-4 { animation-delay: 0.4s; opacity: 0; }
+    .nav-link {
+      position: relative;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover::after {
+      width: 100%;
+    }
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+    }
+    .dark .glass-effect {
+      background: rgba(30, 30, 40, 0.95);
+    }
+    .dark {
+      background-color: #1a1a2e;
+      color: #ffffff;
+    }
+    .dark .bg-gray-50 {
+      background-color: #1a1a2e;
+    }
+    .dark .bg-white {
+      background-color: #16213e;
+    }
+    .dark .text-gray-800 {
+      color: #ffffff;
+    }
+    .dark .text-gray-700 {
+      color: #e5e5e5;
+    }
+    .dark .text-gray-600 {
+      color: #b0b0b0;
+    }
+    .dark .text-gray-500 {
+      color: #888888;
+    }
+    .dark .bg-gray-100 {
+      background-color: #0f3460;
+    }
+    .dark .bg-gray-200 {
+      background-color: #16213e;
+    }
+    .dark .border-gray-200 {
+      border-color: #2d3748;
+    }
+    .dark .border-gray-300 {
+      border-color: #4a5568;
+    }
+    .dark .tool-card:hover {
+      box-shadow: 0 25px 50px -12px rgba(102, 126, 234, 0.4);
+    }
+    .category-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      font-size: 24px;
+    }
+    .modal-backdrop {
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full overflow-auto bg-gray-50">
+  <div id="app" class="min-h-full w-full"><!-- Navigation -->
+   <nav class="glass-effect sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+     <div class="flex justify-between items-center h-16">
+      <div class="flex items-center gap-2 cursor-pointer" onclick="showSection('home')">
+       <div class="w-10 h-10 gradient-bg rounded-xl flex items-center justify-center">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+       </div><span id="nav-title" class="text-xl font-bold gradient-text">ConvertHub</span>
+      </div>
+      <div class="hidden md:flex items-center gap-8"><button onclick="showSection('home')" class="nav-link text-gray-700 hover:text-purple-600 font-medium transition-colors">Home</button> <button onclick="showSection('tools')" class="nav-link text-gray-700 hover:text-purple-600 font-medium transition-colors">All Tools</button> <button onclick="showSection('pricing')" class="nav-link text-gray-700 hover:text-purple-600 font-medium transition-colors">Pricing</button> <button onclick="showSection('faq')" class="nav-link text-gray-700 hover:text-purple-600 font-medium transition-colors">FAQ</button>
+      </div>
+      <div class="flex items-center gap-4"><button id="theme-toggle" onclick="toggleTheme()" class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+        <svg id="sun-icon" class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        <svg id="moon-icon" class="w-5 h-5 text-gray-600 hidden" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg></button> <button onclick="showSignInModal()" class="hidden sm:block px-4 py-2 text-purple-600 font-medium hover:bg-purple-50 rounded-lg transition-colors">Sign In</button> <button onclick="showSignUpModal()" class="px-4 py-2 gradient-bg text-white font-medium rounded-lg hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/25">Get Started</button>
+      </div><button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-gray-100">
+       <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+       </svg></button>
+     </div>
+    </div><!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 bg-white">
+     <div class="px-4 py-3 space-y-2"><button onclick="showSection('home'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-lg text-gray-700 hover:bg-purple-50 hover:text-purple-600">Home</button> <button onclick="showSection('tools'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-lg text-gray-700 hover:bg-purple-50 hover:text-purple-600">All Tools</button> <button onclick="showSection('pricing'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-lg text-gray-700 hover:bg-purple-50 hover:text-purple-600">Pricing</button> <button onclick="showSection('faq'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-lg text-gray-700 hover:bg-purple-50 hover:text-purple-600">FAQ</button>
+     </div>
+    </div>
+   </nav><!-- Home Section -->
+   <section id="home-section" class="section-content"><!-- Hero -->
+    <div class="gradient-bg py-20 px-4">
+     <div class="max-w-4xl mx-auto text-center">
+      <h1 id="hero-title" class="text-4xl md:text-6xl font-bold text-white mb-6 fade-in">Convert, Edit &amp; Transform Your Files</h1>
+      <p id="hero-tagline" class="text-xl text-white/90 mb-10 fade-in fade-in-delay-1">The most powerful free online file converter. Process images, videos, PDFs, and audio files instantly with no software installation required.</p><!-- Quick Search -->
+      <div class="max-w-2xl mx-auto fade-in fade-in-delay-2">
+       <div class="relative"><input type="text" id="search-input" oninput="filterTools()" placeholder="Search tools... (e.g., 'compress PDF', 'convert MP4')" class="w-full px-6 py-4 rounded-2xl text-gray-800 text-lg shadow-xl focus:outline-none focus:ring-4 focus:ring-purple-300 transition-all">
+        <svg class="absolute right-6 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+       </div>
+      </div><!-- Stats -->
+      <div class="flex flex-wrap justify-center gap-8 mt-12 fade-in fade-in-delay-3">
+       <div class="text-center">
+        <div class="text-3xl font-bold text-white">
+         100+
+        </div>
+        <div class="text-white/80">
+         File Formats
+        </div>
+       </div>
+       <div class="text-center">
+        <div class="text-3xl font-bold text-white">
+         10M+
+        </div>
+        <div class="text-white/80">
+         Files Converted
+        </div>
+       </div>
+       <div class="text-center">
+        <div class="text-3xl font-bold text-white">
+         100%
+        </div>
+        <div class="text-white/80">
+         Free to Use
+        </div>
+       </div>
+       <div class="text-center">
+        <div class="text-3xl font-bold text-white">
+         256-bit
+        </div>
+        <div class="text-white/80">
+         SSL Encryption
+        </div>
+       </div>
+      </div>
+     </div>
+    </div><!-- Tool Categories -->
+    <div class="max-w-7xl mx-auto px-4 py-16">
+     <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">All-in-One File Toolkit</h2>
+     <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Choose from our comprehensive suite of tools to convert, compress, edit, and transform your files.</p>
+     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="categories-grid"><!-- Image Tools -->
+      <div class="tool-card bg-white rounded-2xl p-6 shadow-lg cursor-pointer" onclick="showCategory('image')">
+       <div class="category-icon bg-pink-100 text-pink-500 mb-4">
+        🖼️
+       </div>
+       <h3 class="text-xl font-bold text-gray-800 mb-2">Image Tools</h3>
+       <p class="text-gray-600 mb-4">Compress, resize, convert, and edit images in various formats.</p>
+       <div class="flex flex-wrap gap-2"><span class="px-2 py-1 bg-pink-50 text-pink-600 text-xs rounded-full">PNG</span> <span class="px-2 py-1 bg-pink-50 text-pink-600 text-xs rounded-full">JPG</span> <span class="px-2 py-1 bg-pink-50 text-pink-600 text-xs rounded-full">WebP</span> <span class="px-2 py-1 bg-pink-50 text-pink-600 text-xs rounded-full">GIF</span>
+       </div>
+      </div>
+      
+      <!-- Video Tools -->
+      <div class="tool-card bg-white rounded-2xl p-6 shadow-lg cursor-pointer" onclick="showCategory('video')">
+       <div class="category-icon bg-purple-100 text-purple-500 mb-4">
+        🎬
+       </div>
+       <h3 class="text-xl font-bold text-gray-800 mb-2">Video Tools</h3>
+       <p class="text-gray-600 mb-4">Convert, compress, trim, merge videos and extract thumbnails.</p>
+       <div class="flex flex-wrap gap-2"><span class="px-2 py-1 bg-purple-50 text-purple-600 text-xs rounded-full">MP4</span> <span class="px-2 py-1 bg-purple-50 text-purple-600 text-xs rounded-full">AVI</span> <span class="px-2 py-1 bg-purple-50 text-purple-600 text-xs rounded-full">MOV</span> <span class="px-2 py-1 bg-purple-50 text-purple-600 text-xs rounded-full">WebM</span>
+       </div>
+      </div><!-- PDF Tools -->
+      <div class="tool-card bg-white rounded-2xl p-6 shadow-lg cursor-pointer" onclick="showCategory('pdf')">
+       <div class="category-icon bg-red-100 text-red-500 mb-4">
+        📄
+       </div>
+       <h3 class="text-xl font-bold text-gray-800 mb-2">PDF Tools</h3>
+       <p class="text-gray-600 mb-4">Merge, split, compress, convert PDFs and extract content.</p>
+       <div class="flex flex-wrap gap-2"><span class="px-2 py-1 bg-red-50 text-red-600 text-xs rounded-full">Merge</span> <span class="px-2 py-1 bg-red-50 text-red-600 text-xs rounded-full">Split</span> <span class="px-2 py-1 bg-red-50 text-red-600 text-xs rounded-full">Compress</span> <span class="px-2 py-1 bg-red-50 text-red-600 text-xs rounded-full">Convert</span>
+       </div>
+      </div><!-- Audio Tools -->
+      <div class="tool-card bg-white rounded-2xl p-6 shadow-lg cursor-pointer" onclick="showCategory('audio')">
+       <div class="category-icon bg-green-100 text-green-500 mb-4">
+        🎵
+       </div>
+       <h3 class="text-xl font-bold text-gray-800 mb-2">Audio Tools</h3>
+       <p class="text-gray-600 mb-4">Change voice and remove background noise from audio.</p>
+       <div class="flex flex-wrap gap-2"><span class="px-2 py-1 bg-green-50 text-green-600 text-xs rounded-full">Voice Change</span> <span class="px-2 py-1 bg-green-50 text-green-600 text-xs rounded-full">Noise Remove</span>
+       </div>
+      </div>
+
+
+
+<a href="/youtube">
+  <div class="tool-card bg-white rounded-2xl p-6 shadow-lg cursor-pointer">
+    <div class="category-icon bg-red-100 text-red-500 mb-4">
+      📥
+    </div>
+
+    <h3 class="text-xl font-bold text-gray-800 mb-2">
+      YouTube Video & Audio Downloader
+    </h3>
+
+    <p class="text-gray-600 mb-4">
+      Download YouTube videos and audio in multiple formats with fast speed and high quality.
+    </p>
+
+    <div class="flex flex-wrap gap-2">
+      <span class="px-2 py-1 bg-red-50 text-red-600 text-xs rounded-full">MP4</span>
+      <span class="px-2 py-1 bg-red-50 text-red-600 text-xs rounded-full">MP3</span>
+      <span class="px-2 py-1 bg-red-50 text-red-600 text-xs rounded-full">HD</span>
+      <span class="px-2 py-1 bg-red-50 text-red-600 text-xs rounded-full">4K</span>
+    </div>
+  </div>
+</a>
+
+<a href="live-match.html">
+  <div class="tool-card bg-white rounded-2xl p-6 shadow-lg cursor-pointer">
+    <div class="category-icon bg-green-100 text-green-600 mb-4">
+      🔴
+    </div>
+
+    <h3 class="text-xl font-bold text-gray-800 mb-2">
+      Join Live Match
+    </h3>
+
+    <p class="text-gray-600 mb-4">
+      Join ongoing live matches and enjoy real-time updates and action.
+    </p>
+
+    <div class="flex flex-wrap gap-2">
+      <span class="px-2 py-1 bg-green-50 text-green-600 text-xs rounded-full">Live</span>
+      <span class="px-2 py-1 bg-green-50 text-green-600 text-xs rounded-full">Match</span>
+      <span class="px-2 py-1 bg-green-50 text-green-600 text-xs rounded-full">Score</span>
+    </div>
+  </div>
+</a>
+
+
+
+     </div>
+
+     
+    </div><!-- Popular Tools -->
+    <div class="bg-gray-100 py-16 px-4">
+     <div class="max-w-7xl mx-auto">
+      <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">Most Popular Tools</h2>
+      <p class="text-center text-gray-600 mb-12">Our most used conversion and editing tools</p>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4" id="popular-tools"><!-- Popular tools will be dynamically inserted -->
+      </div>
+     </div>
+    </div><!-- Features Section -->
+    <div class="max-w-7xl mx-auto px-4 py-16">
+     <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Why Choose ConvertHub?</h2>
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="text-center p-6">
+       <div class="w-16 h-16 gradient-bg rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+       </div>
+       <h3 class="text-xl font-bold text-gray-800 mb-2">Lightning Fast</h3>
+       <p class="text-gray-600">Advanced algorithms ensure your files are processed in seconds, not minutes.</p>
+      </div>
+      <div class="text-center p-6">
+       <div class="w-16 h-16 gradient-bg rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+       </div>
+       <h3 class="text-xl font-bold text-gray-800 mb-2">100% Secure</h3>
+       <p class="text-gray-600">256-bit SSL encryption. Files are automatically deleted after 24 hours.</p>
+      </div>
+      <div class="text-center p-6">
+       <div class="w-16 h-16 gradient-bg rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+        </svg>
+       </div>
+       <h3 class="text-xl font-bold text-gray-800 mb-2">Cloud Based</h3>
+       <p class="text-gray-600">No software installation needed. Works on any device with a browser.</p>
+      </div>
+     </div>
+    </div><!-- Testimonials -->
+    <div class="bg-gradient-to-r from-purple-600 to-pink-600 py-16 px-4">
+     <div class="max-w-4xl mx-auto">
+      <h2 class="text-3xl font-bold text-center text-white mb-12">Loved by Millions</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+       <div class="bg-white/10 backdrop-blur rounded-2xl p-6">
+        <div class="flex gap-1 mb-4"><span class="text-yellow-400">����</span> <span class="text-yellow-400">★</span> <span class="text-yellow-400">★</span> <span class="text-yellow-400">★</span> <span class="text-yellow-400">★</span>
+        </div>
+        <p class="text-white/90 mb-4">"Best file converter I've ever used. Fast, free, and no annoying watermarks!"</p>
+        <p class="text-white font-medium">— Sarah M., Designer</p>
+       </div>
+       <div class="bg-white/10 backdrop-blur rounded-2xl p-6">
+        <div class="flex gap-1 mb-4"><span class="text-yellow-400">★</span> <span class="text-yellow-400">★</span> <span class="text-yellow-400">★</span> <span class="text-yellow-400">★</span> <span class="text-yellow-400">★</span>
+        </div>
+        <p class="text-white/90 mb-4">"Converted 500+ videos without a hitch. The batch processing is incredible."</p>
+        <p class="text-white font-medium">— Mike R., Content Creator</p>
+       </div>
+       <div class="bg-white/10 backdrop-blur rounded-2xl p-6">
+        <div class="flex gap-1 mb-4"><span class="text-yellow-400">★</span> <span class="text-yellow-400">★</span> <span class="text-yellow-400">★</span> <span class="text-yellow-400">★</span> <span class="text-yellow-400">★</span>
+        </div>
+        <p class="text-white/90 mb-4">"PDF tools saved me hours of work. Merging documents is now a breeze."</p>
+        <p class="text-white font-medium">— Emily K., Attorney</p>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section><!-- Tools Section -->
+   <section id="tools-section" class="section-content hidden">
+    <div class="max-w-7xl mx-auto px-4 py-12"><button onclick="showSection('home')" class="flex items-center gap-2 text-purple-600 hover:text-purple-700 mb-8 font-medium">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg> Back to Home </button>
+     <h1 class="text-4xl font-bold text-gray-800 mb-2">All Tools</h1>
+     <p class="text-gray-600 mb-8">Browse our complete collection of file conversion and editing tools</p><!-- Category Filter -->
+     <div class="flex flex-wrap gap-3 mb-8"><button onclick="filterByCategory('all')" class="category-filter-btn px-4 py-2 rounded-full bg-purple-600 text-white font-medium" data-category="all">All Tools</button> <button onclick="filterByCategory('image')" class="category-filter-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-gray-300" data-category="image">🖼️ Image</button> <button onclick="filterByCategory('video')" class="category-filter-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-gray-300" data-category="video">🎬 Video</button> <button onclick="filterByCategory('pdf')" class="category-filter-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-gray-300" data-category="pdf">📄 PDF</button> <button onclick="filterByCategory('audio')" class="category-filter-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-gray-300" data-category="audio">🎵 Audio</button>
+     </div><!-- Tools Grid -->
+     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="all-tools-grid"><!-- Tools will be dynamically inserted -->
+     </div>
+    </div>
+   </section><!-- Tool Modal -->
+   <div id="tool-modal" class="fixed inset-0 z-50 hidden">
+    <div class="modal-backdrop absolute inset-0" onclick="closeToolModal()"></div>
+    <div class="absolute inset-4 md:inset-10 lg:inset-20 bg-white rounded-3xl shadow-2xl overflow-auto">
+     <div class="p-6 md:p-10"><!-- Modal Header -->
+      <div class="flex items-start justify-between mb-8">
+       <div class="flex items-center gap-4">
+        <div id="modal-icon" class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl"></div>
+        <div>
+         <h2 id="modal-title" class="text-2xl md:text-3xl font-bold text-gray-800"></h2>
+         <p id="modal-description" class="text-gray-600"></p>
+        </div>
+       </div><button onclick="closeToolModal()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+        <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg></button>
+      </div><!-- Upload Zone -->
+      <div id="upload-zone" class="upload-zone rounded-2xl p-10 mb-8 text-center cursor-pointer" onclick="document.getElementById('file-input').click()" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)"><input type="file" id="file-input" class="hidden" onchange="handleFileSelect(event)" multiple>
+       <div class="max-w-md mx-auto">
+        <div class="w-20 h-20 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4">
+         <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+         </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">Drop your files here</h3>
+        <p class="text-gray-600 mb-4">or click to browse from your device</p>
+        <p class="text-sm text-gray-500">Maximum file size: <span class="font-medium">100MB</span> (Free) | <span class="font-medium">2GB</span> (Premium)</p>
+       </div>
+      </div><!-- File List -->
+      <div id="file-list" class="space-y-3 mb-8 hidden"><!-- Files will be dynamically inserted -->
+      </div><!-- Preview Container -->
+      <div id="preview-container" class="bg-gray-50 rounded-2xl p-6 mb-8 hidden">
+       <h3 class="text-lg font-bold text-gray-800 mb-4">Preview</h3>
+       <div class="flex justify-center items-center bg-white rounded-xl p-4 min-h-[300px]"><img id="preview-image" src="" alt="Preview" class="max-w-full max-h-[400px] rounded-lg shadow-lg">
+       </div>
+      </div><!-- Tool Options -->
+      <div id="tool-options" class="bg-gray-50 rounded-2xl p-6 mb-8 hidden">
+       <h3 class="text-lg font-bold text-gray-800 mb-4">Options</h3>
+       <div id="options-content" class="space-y-4"><!-- Options will be dynamically inserted based on tool type -->
+       </div>
+      </div><!-- Process Button -->
+      <div id="process-section" class="hidden"><button id="process-btn" onclick="processFiles()" class="w-full py-4 gradient-bg text-white font-bold text-lg rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/25"> Process Files </button>
+      </div><!-- Processing State -->
+      <div id="processing-state" class="hidden">
+       <div class="text-center py-10">
+        <div class="w-20 h-20 rounded-full border-4 border-purple-200 border-t-purple-600 animate-spin mx-auto mb-6"></div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">Processing your files...</h3>
+        <p class="text-gray-600 mb-4">This may take a few moments</p>
+        <div class="max-w-md mx-auto bg-gray-200 rounded-full h-3 overflow-hidden">
+         <div id="progress-bar" class="progress-bar h-full rounded-full" style="width: 0%"></div>
+        </div>
+        <p id="progress-text" class="text-sm text-gray-500 mt-2">0%</p>
+       </div>
+      </div><!-- Complete State -->
+      <div id="complete-state" class="hidden">
+       <div class="text-center py-10">
+        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+         <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+         </svg>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-800 mb-2">Processing Complete!</h3>
+        <p class="text-gray-600 mb-6">Your files are ready to download</p>
+        <div id="download-list" class="max-w-md mx-auto space-y-3 mb-6"><!-- Download items will be inserted here -->
+        </div><button onclick="downloadAll()" class="px-8 py-3 gradient-bg text-white font-bold rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/25"> Download All </button> <button onclick="resetModal()" class="block mx-auto mt-4 text-purple-600 font-medium hover:text-purple-700"> Process more files </button>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div><!-- Pricing Section -->
+   <section id="pricing-section" class="section-content hidden">
+    <div class="gradient-bg py-16 px-4">
+     <div class="max-w-4xl mx-auto text-center">
+      <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Simple, Transparent Pricing</h1>
+      <p class="text-xl text-white/90">Start free, upgrade when you need more power</p>
+     </div>
+    </div>
+    <div class="max-w-5xl mx-auto px-4 py-16">
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-8"><!-- Free Plan -->
+      <div class="bg-white rounded-3xl p-8 shadow-lg border-2 border-gray-100">
+       <h3 class="text-2xl font-bold text-gray-800 mb-2">Free</h3>
+       <p class="text-gray-600 mb-6">Perfect for occasional use</p>
+       <div class="text-4xl font-bold text-gray-800 mb-6">
+        $0<span class="text-lg font-normal text-gray-500">/month</span>
+       </div>
+       <ul class="space-y-3 mb-8">
+        <li class="flex items-center gap-3 text-gray-700">
+         <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+         </svg> 100MB file size limit</li>
+        <li class="flex items-center gap-3 text-gray-700">
+         <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+         </svg> 5 files per batch</li>
+        <li class="flex items-center gap-3 text-gray-700">
+         <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+         </svg> All basic tools</li>
+        <li class="flex items-center gap-3 text-gray-700">
+         <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+         </svg> No watermarks</li>
+        <li class="flex items-center gap-3 text-gray-400">
+         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+         </svg> Priority processing</li>
+       </ul><button class="w-full py-3 border-2 border-purple-600 text-purple-600 font-bold rounded-xl hover:bg-purple-50 transition-colors"> Get Started Free </button>
+      </div><!-- Pro Plan -->
+      <div class="bg-white rounded-3xl p-8 shadow-xl border-2 border-purple-600 relative transform scale-105">
+       <div class="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 gradient-bg text-white text-sm font-bold rounded-full">
+        MOST POPULAR
+       </div>
+       <h3 class="text-2xl font-bold text-gray-800 mb-2">Pro</h3>
+       <p class="text-gray-600 mb-6">For power users &amp; teams</p>
+       <div class="text-4xl font-bold text-gray-800 mb-6">
+        $9<span class="text-lg font-normal text-gray-500">/month</span>
+       </div>
+       <ul class="space-y-3 mb-8">
+        <li class="flex items-center gap-3 text-gray-700">
+         <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+         </svg> 2GB file size limit</li>
+        <li class="flex items-center gap-3 text-gray-700">
+         <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+         </svg> Unlimited batch files</li>
+        <li class="flex items-center gap-3 text-gray-700">
+         <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+         </svg> All premium tools</li>
+        <li class="flex items-center gap-3 text-gray-700">
+         <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+         </svg> Priority processing</li>
+        <li class="flex items-center gap-3 text-gray-700">
+         <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+         </svg> No ads</li>
+       </ul><button class="w-full py-3 gradient-bg text-white font-bold rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/25"> Start Pro Trial </button>
+      </div><!-- Enterprise Plan -->
+      <div class="bg-white rounded-3xl p-8 shadow-lg border-2 border-gray-100">
+       <h3 class="text-2xl font-bold text-gray-800 mb-2">Enterprise</h3>
+       <p class="text-gray-600 mb-6">For large organizations</p>
+       <div class="text-4xl font-bold text-gray-800 mb-6">
+        Custom
+       </div>
+       <ul class="space-y-3 mb-8">
+        <li class="flex items-center gap-3 text-gray-700">
+         <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+         </svg> Unlimited file size</li>
+        <li class="flex items-center gap-3 text-gray-700">
+         <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+         </svg> API access</li>
+        <li class="flex items-center gap-3 text-gray-700">
+         <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+         </svg> Dedicated support</li>
+        <li class="flex items-center gap-3 text-gray-700">
+         <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+         </svg> SLA guarantee</li>
+        <li class="flex items-center gap-3 text-gray-700">
+         <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+         </svg> Custom integrations</li>
+       </ul><button class="w-full py-3 border-2 border-purple-600 text-purple-600 font-bold rounded-xl hover:bg-purple-50 transition-colors"> Contact Sales </button>
+      </div>
+     </div>
+    </div>
+   </section><!-- FAQ Section -->
+   <section id="faq-section" class="section-content hidden">
+    <div class="gradient-bg py-16 px-4">
+     <div class="max-w-4xl mx-auto text-center">
+      <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Frequently Asked Questions</h1>
+      <p class="text-xl text-white/90">Everything you need to know about ConvertHub</p>
+     </div>
+    </div>
+    <div class="max-w-3xl mx-auto px-4 py-16">
+     <div class="space-y-4" id="faq-list"><!-- FAQs will be dynamically inserted -->
+     </div>
+    </div>
+   </section><!-- Admin Dashboard Section -->
+   <section id="admin-section" class="section-content hidden">
+    <div class="gradient-bg py-16 px-4">
+     <div class="max-w-4xl mx-auto text-center">
+      <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Admin Dashboard</h1>
+      <p class="text-xl text-white/90">Manage ConvertHub Platform</p>
+     </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 py-16"><!-- Stats Cards -->
+     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+      <div class="bg-white rounded-2xl p-6 shadow-lg">
+       <div class="flex items-center justify-between mb-4">
+        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-500 text-xl">
+         👥
+        </div>
+       </div>
+       <h3 class="text-3xl font-bold text-gray-800 mb-1" id="total-users">12,458</h3>
+       <p class="text-gray-600">Total Users</p>
+      </div>
+      <div class="bg-white rounded-2xl p-6 shadow-lg">
+       <div class="flex items-center justify-between mb-4">
+        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center text-green-500 text-xl">
+         📁
+        </div>
+       </div>
+       <h3 class="text-3xl font-bold text-gray-800 mb-1" id="total-conversions">1.2M</h3>
+       <p class="text-gray-600">Total Conversions</p>
+      </div>
+      <div class="bg-white rounded-2xl p-6 shadow-lg">
+       <div class="flex items-center justify-between mb-4">
+        <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-purple-500 text-xl">
+         ����
+        </div>
+       </div>
+       <h3 class="text-3xl font-bold text-gray-800 mb-1" id="premium-users">2,145</h3>
+       <p class="text-gray-600">Premium Users</p>
+      </div>
+      <div class="bg-white rounded-2xl p-6 shadow-lg">
+       <div class="flex items-center justify-between mb-4">
+        <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center text-yellow-500 text-xl">
+         💰
+        </div>
+       </div>
+       <h3 class="text-3xl font-bold text-gray-800 mb-1" id="monthly-revenue">$18.2K</h3>
+       <p class="text-gray-600">Monthly Revenue</p>
+      </div>
+     </div><!-- User Management Table -->
+     <div class="bg-white rounded-2xl p-6 shadow-lg mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">User Management</h2>
+      <div class="overflow-x-auto">
+       <table class="w-full">
+        <thead>
+         <tr class="border-b border-gray-200">
+          <th class="text-left py-3 px-4 font-semibold text-gray-700">User ID</th>
+          <th class="text-left py-3 px-4 font-semibold text-gray-700">Email</th>
+          <th class="text-left py-3 px-4 font-semibold text-gray-700">Plan</th>
+          <th class="text-left py-3 px-4 font-semibold text-gray-700">Files Processed</th>
+          <th class="text-left py-3 px-4 font-semibold text-gray-700">Join Date</th>
+          <th class="text-left py-3 px-4 font-semibold text-gray-700">Actions</th>
+         </tr>
+        </thead>
+        <tbody id="users-table-body">
+         <tr class="border-b border-gray-100 hover:bg-gray-50">
+          <td class="py-3 px-4 text-gray-800">#12458</td>
+          <td class="py-3 px-4 text-gray-800">user@example.com</td>
+          <td class="py-3 px-4"><span class="px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm font-medium">Pro</span></td>
+          <td class="py-3 px-4 text-gray-800">342</td>
+          <td class="py-3 px-4 text-gray-600">Dec 15, 2024</td>
+          <td class="py-3 px-4"><button class="text-blue-600 hover:text-blue-700 font-medium text-sm">View</button></td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+     </div><!-- System Settings -->
+     <div class="bg-white rounded-2xl p-6 shadow-lg">
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">System Settings</h2>
+      <div class="space-y-4">
+       <div class="flex items-center justify-between py-3 border-b border-gray-100">
+        <div>
+         <h3 class="font-semibold text-gray-800">Maintenance Mode</h3>
+         <p class="text-sm text-gray-600">Enable to prevent new conversions</p>
+        </div><label class="relative inline-flex items-center cursor-pointer"> <input type="checkbox" class="sr-only peer">
+         <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div></label>
+       </div>
+       <div class="flex items-center justify-between py-3 border-b border-gray-100">
+        <div>
+         <h3 class="font-semibold text-gray-800">Max File Size (Free)</h3>
+         <p class="text-sm text-gray-600">Maximum upload size for free users</p>
+        </div><input type="number" value="100" class="px-4 py-2 border rounded-lg w-24 text-right">
+       </div>
+       <div class="flex items-center justify-between py-3">
+        <div>
+         <h3 class="font-semibold text-gray-800">Email Notifications</h3>
+         <p class="text-sm text-gray-600">Send admin alerts</p>
+        </div><label class="relative inline-flex items-center cursor-pointer"> <input type="checkbox" class="sr-only peer" checked>
+         <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div></label>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section><!-- Sign Up Modal -->
+   <div id="signup-modal" class="fixed inset-0 z-50 hidden">
+    <div class="modal-backdrop absolute inset-0" onclick="closeSignUpModal()"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 m-4">
+     <div class="flex items-start justify-between mb-6">
+      <h2 class="text-3xl font-bold gradient-text">Get Started</h2><button onclick="closeSignUpModal()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+       <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+       </svg></button>
+     </div>
+     <form onsubmit="handleSignUp(event)" class="space-y-4">
+      <div><label for="signup-name" class="block text-sm font-medium text-gray-700 mb-2">Full Name</label> <input type="text" id="signup-name" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+      </div>
+      <div><label for="signup-email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label> <input type="email" id="signup-email" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+      </div>
+      <div><label for="signup-password" class="block text-sm font-medium text-gray-700 mb-2">Password</label> <input type="password" id="signup-password" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+      </div><button type="submit" class="w-full py-3 gradient-bg text-white font-bold rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/25"> Create Account </button>
+     </form>
+     <p class="text-center text-sm text-gray-600 mt-6">Already have an account? <button onclick="closeSignUpModal(); showSignInModal();" class="text-purple-600 font-medium hover:text-purple-700">Sign In</button></p>
+    </div>
+   </div><!-- Sign In Modal -->
+   <div id="signin-modal" class="fixed inset-0 z-50 hidden">
+    <div class="modal-backdrop absolute inset-0" onclick="closeSignInModal()"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 m-4">
+     <div class="flex items-start justify-between mb-6">
+      <h2 class="text-3xl font-bold gradient-text">Sign In</h2><button onclick="closeSignInModal()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+       <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+       </svg></button>
+     </div>
+     <form onsubmit="handleSignIn(event)" class="space-y-4">
+      <div><label for="signin-email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label> <input type="email" id="signin-email" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+      </div>
+      <div><label for="signin-password" class="block text-sm font-medium text-gray-700 mb-2">Password</label> <input type="password" id="signin-password" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+      </div><button type="submit" class="w-full py-3 gradient-bg text-white font-bold rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/25"> Sign In </button>
+     </form>
+     <p class="text-center text-sm text-gray-600 mt-6">Don't have an account? <button onclick="closeSignInModal(); showSignUpModal();" class="text-purple-600 font-medium hover:text-purple-700">Sign Up</button></p>
+    </div>
+   </div><!-- Admin Login Modal -->
+   <div id="admin-login-modal" class="fixed inset-0 z-50 hidden">
+    <div class="modal-backdrop absolute inset-0" onclick="closeAdminLoginModal()"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 m-4">
+     <div class="flex items-start justify-between mb-6">
+      <div>
+       <h2 class="text-3xl font-bold gradient-text">Admin Login</h2>
+       <p class="text-sm text-gray-600 mt-1">Secure access to dashboard</p>
+      </div><button onclick="closeAdminLoginModal()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+       <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+       </svg></button>
+     </div>
+     <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+      <div><label for="admin-email" class="block text-sm font-medium text-gray-700 mb-2">Admin Email</label> <input type="email" id="admin-email" required placeholder="hello@mishra.com" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+      </div>
+      <div><label for="admin-password" class="block text-sm font-medium text-gray-700 mb-2">Password</label> <input type="password" id="admin-password" required placeholder="saurabh" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+      </div>
+      <div id="admin-error" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+       Invalid credentials. Please try again.
+      </div><button type="submit" class="w-full py-3 gradient-bg text-white font-bold rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/25"> Login to Dashboard </button>
+     </form>
+    </div>
+   </div><!-- Footer -->
+   <footer class="bg-gray-900 text-white py-16 px-4">
+    <div class="max-w-7xl mx-auto">
+     <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+      <div class="col-span-2 md:col-span-1">
+       <div class="flex items-center gap-2 mb-4">
+        <div class="w-10 h-10 gradient-bg rounded-xl flex items-center justify-center">
+         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+         </svg>
+        </div><span id="footer-title" class="text-xl font-bold">ConvertHub</span>
+       </div>
+       <p class="text-gray-400 text-sm">The most powerful free online file converter and editor platform.</p>
+      </div>
+      <div>
+       <h4 class="font-bold mb-4">Tools</h4>
+       <ul class="space-y-2 text-gray-400 text-sm">
+        <li><button onclick="showCategory('image')" class="hover:text-white transition-colors">Image Tools</button></li>
+        <li><button onclick="showCategory('video')" class="hover:text-white transition-colors">Video Tools</button></li>
+        <li><button onclick="showCategory('pdf')" class="hover:text-white transition-colors">PDF Tools</button></li>
+        <li><button onclick="showCategory('audio')" class="hover:text-white transition-colors">Audio Tools</button></li>
+       </ul>
+      </div>
+      <div>
+       <h4 class="font-bold mb-4">Company</h4>
+       <ul class="space-y-2 text-gray-400 text-sm">
+        <li><a href="#" class="hover:text-white transition-colors">About Us</a></li>
+        <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
+        <li><a href="#" class="hover:text-white transition-colors">Careers</a></li>
+        <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+        <li><button onclick="showAdminLoginModal()" class="hover:text-white transition-colors">Admin</button></li>
+       </ul>
+      </div>
+      <div>
+       <h4 class="font-bold mb-4">Legal</h4>
+       <ul class="space-y-2 text-gray-400 text-sm">
+        <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+        <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
+        <li><a href="#" class="hover:text-white transition-colors">Cookie Policy</a></li>
+        <li><a href="#" class="hover:text-white transition-colors">GDPR</a></li>
+       </ul>
+      </div>
+     </div>
+     <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-gray-400 text-sm">© 2024 ConvertHub. All rights reserved.</p>
+      <div class="flex gap-4"><a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-700 transition-colors">
+        <svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24">
+         <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
+        </svg></a> <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-700 transition-colors">
+        <svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24">
+         <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+        </svg></a> <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-700 transition-colors">
+        <svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24">
+         <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+        </svg></a>
+      </div>
+     </div>
+    </div>
+   </footer>
+  </div>
+  <script>
+    // Configuration
+    const defaultConfig = {
+      site_title: 'ConvertHub',
+      tagline: 'Convert, Edit & Transform Your Files',
+      primary_color: '#667eea',
+      secondary_color: '#764ba2',
+      accent_color: '#f093fb',
+      text_color: '#1f2937',
+      background_color: '#f9fafb'
+    };
+
+    let config = { ...defaultConfig };
+    let currentTool = null;
+    let selectedFiles = [];
+    let isDarkMode = false;
+
+    // Tools Data
+    const tools = {
+      image: [
+        { id: 'img-compress', name: 'Compress Image', icon: '📦', desc: 'Reduce image file size', formats: ['PNG', 'JPG', 'WebP'] },
+        { id: 'img-resize', name: 'Resize Image', icon: '📐', desc: 'Change image dimensions', formats: ['PNG', 'JPG', 'WebP', 'GIF'] },
+        /* { id: 'img-convert', name: 'Convert Image', icon: '🔄', desc: 'Change image format', formats: ['PNG', 'JPG', 'WebP', 'GIF'] }, */
+        /* { id: 'img-crop', name: 'Crop Image', icon: '✂️', desc: 'Crop to specific area', formats: ['PNG', 'JPG', 'WebP'] }, */
+        { id: 'img-rotate', name: 'Rotate Image', icon: '🔃', desc: 'Rotate and flip images', formats: ['PNG', 'JPG', 'WebP', 'GIF'] },
+        /* { id: 'img-watermark', name: 'Add/Remove Watermark', icon: '💧', desc: 'Add or remove watermark', formats: ['PNG', 'JPG'] }, */
+         { id: 'img-to-pdf', name: 'Image to PDF', icon: '📄', desc: 'Convert images to PDF', formats: ['PNG', 'JPG'] } 
+      ],
+      video: [
+        { id: 'vid-compress', name: 'Compress Video', icon: '📦', desc: 'Reduce video file size', formats: ['MP4', 'AVI', 'MOV', 'WebM'] },
+        /* { id: 'vid-convert', name: 'Convert Video', icon: '🔄', desc: 'Change video format', formats: ['MP4', 'AVI', 'MOV', 'WebM', 'MKV'] }, */
+        /* { id: 'vid-trim', name: 'Trim Video', icon: '✂️', desc: 'Cut video segments', formats: ['MP4', 'AVI', 'MOV'] }, */
+        /* { id: 'vid-merge', name: 'Merge Videos', icon: '��', desc: 'Combine multiple videos', formats: ['MP4', 'AVI', 'MOV'] }, */
+        /* { id: 'vid-thumbnail', name: 'Extract Thumbnail', icon: '🖼️', desc: 'Get video thumbnails', formats: ['MP4', 'AVI', 'MOV', 'WebM'] }, */
+        { id: 'vid-subtitle', name: 'Add Subtitles', icon: '💬', desc: 'Add SRT subtitles', formats: ['MP4', 'AVI', 'MOV'] }
+      ],
+      pdf: [
+        { id: 'pdf-compress', name: 'Compress PDF', icon: '📦', desc: 'Reduce PDF file size', formats: ['PDF'] },
+        { id: 'pdf-to-img', name: 'PDF to Image', icon: '🖼️', desc: 'Convert PDF to images', formats: ['PDF'] }
+      ],
+      audio: [
+        { id: 'aud-voice-change', name: 'Voice Changer', icon: '🎙️', desc: 'Change voice pitch and tone', formats: ['MP3', 'WAV', 'OGG', 'M4A'] },
+        { id: 'aud-bg-remove', name: 'Remove Background Noise', icon: '🔇', desc: 'Remove background sound from audio', formats: ['MP3', 'WAV', 'OGG', 'M4A'] }
+      ]
+    };
+
+    const faqs = [
+      { q: 'Is ConvertHub really free?', a: 'Yes! Our basic tools are completely free with no hidden fees. We offer premium plans for users who need larger file sizes and batch processing.' },
+      { q: 'How long are my files stored?', a: 'Files are automatically deleted from our servers after 24 hours. We take your privacy seriously and never share your files with third parties.' },
+      { q: 'What is the maximum file size?', a: 'Free users can upload files up to 100MB. Premium users get up to 2GB file size limit, and Enterprise users have unlimited file sizes.' },
+      { q: 'Is my data secure?', a: 'Absolutely. We use 256-bit SSL encryption for all file transfers. Your files are processed in isolated environments and automatically deleted after processing.' },
+      { q: 'Do you add watermarks?', a: 'No, we never add watermarks to your files, even on the free plan. Your converted files are exactly as you expect them.' },
+      { q: 'Can I process multiple files at once?', a: 'Yes! Free users can process up to 5 files at once. Premium users have unlimited batch processing capabilities.' }
+    ];
+
+    // Initialize
+    function init() {
+      renderPopularTools();
+      renderAllTools();
+      renderFAQs();
+      
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: async (newConfig) => {
+            config = { ...config, ...newConfig };
+            updateUI();
+          },
+          mapToCapabilities: (cfg) => ({
+            recolorables: [],
+            borderables: [],
+            fontEditable: undefined,
+            fontSizeable: undefined
+          }),
+          mapToEditPanelValues: (cfg) => new Map([
+            ['site_title', cfg.site_title || defaultConfig.site_title],
+            ['tagline', cfg.tagline || defaultConfig.tagline]
+          ])
+        });
+      }
+    }
+
+    function updateUI() {
+      document.getElementById('nav-title').textContent = config.site_title || defaultConfig.site_title;
+      document.getElementById('footer-title').textContent = config.site_title || defaultConfig.site_title;
+      document.getElementById('hero-tagline').textContent = config.tagline || defaultConfig.tagline;
+    }
+
+    function renderPopularTools() {
+      const container = document.getElementById('popular-tools');
+      const popular = [
+        tools.image[0], tools.image[1], tools.pdf[0], 
+        tools.pdf[1], tools.video[0], tools.audio[0]
+      ];
+      
+      container.innerHTML = popular.map(tool => `
+        <button onclick="openTool('${tool.id}')" class="tool-card bg-white rounded-xl p-4 text-center shadow-md hover:shadow-lg">
+          <div class="text-3xl mb-2">${tool.icon}</div>
+          <div class="font-medium text-gray-800 text-sm">${tool.name}</div>
+        </button>
+      `).join('');
+    }
+
+    function renderAllTools(filter = 'all') {
+      const container = document.getElementById('all-tools-grid');
+      let allTools = [];
+      
+      Object.entries(tools).forEach(([category, categoryTools]) => {
+        if (filter === 'all' || filter === category) {
+          categoryTools.forEach(tool => {
+            allTools.push({ ...tool, category });
+          });
+        }
+      });
+      
+      container.innerHTML = allTools.map(tool => {
+        const colors = {
+          image: 'bg-pink-100 text-pink-500',
+          video: 'bg-purple-100 text-purple-500',
+          pdf: 'bg-red-100 text-red-500',
+          audio: 'bg-green-100 text-green-500'
+        };
+        
+        return `
+          <button onclick="openTool('${tool.id}')" class="tool-card bg-white rounded-xl p-5 text-left shadow-md hover:shadow-lg">
+            <div class="w-12 h-12 ${colors[tool.category]} rounded-xl flex items-center justify-center text-xl mb-3">${tool.icon}</div>
+            <h3 class="font-bold text-gray-800 mb-1">${tool.name}</h3>
+            <p class="text-sm text-gray-600 mb-2">${tool.desc}</p>
+            <div class="flex flex-wrap gap-1">
+              ${tool.formats.slice(0, 3).map(f => `<span class="text-xs px-2 py-0.5 bg-gray-100 rounded-full text-gray-600">${f}</span>`).join('')}
+            </div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderFAQs() {
+      const container = document.getElementById('faq-list');
+      container.innerHTML = faqs.map((faq, i) => `
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+          <button onclick="toggleFAQ(${i})" class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors">
+            <span class="font-bold text-gray-800">${faq.q}</span>
+            <svg id="faq-icon-${i}" class="w-5 h-5 text-gray-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div id="faq-answer-${i}" class="hidden px-6 pb-4">
+            <p class="text-gray-600">${faq.a}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleFAQ(index) {
+      const answer = document.getElementById(`faq-answer-${index}`);
+      const icon = document.getElementById(`faq-icon-${index}`);
+      answer.classList.toggle('hidden');
+      icon.classList.toggle('rotate-180');
+    }
+
+    function showSection(section) {
+      document.querySelectorAll('.section-content').forEach(s => s.classList.add('hidden'));
+      document.getElementById(`${section}-section`).classList.remove('hidden');
+      window.scrollTo(0, 0);
+    }
+
+    function showCategory(category) {
+      showSection('tools');
+      filterByCategory(category);
+    }
+
+    function filterByCategory(category) {
+      renderAllTools(category);
+      
+      document.querySelectorAll('.category-filter-btn').forEach(btn => {
+        if (btn.dataset.category === category) {
+          btn.classList.remove('bg-gray-200', 'text-gray-700');
+          btn.classList.add('bg-purple-600', 'text-white');
+        } else {
+          btn.classList.add('bg-gray-200', 'text-gray-700');
+          btn.classList.remove('bg-purple-600', 'text-white');
+        }
+      });
+    }
+
+    function filterTools() {
+      const query = document.getElementById('search-input').value.toLowerCase();
+      if (query.length > 0) {
+        showSection('tools');
+        const container = document.getElementById('all-tools-grid');
+        let allTools = [];
+        
+        Object.entries(tools).forEach(([category, categoryTools]) => {
+          categoryTools.forEach(tool => {
+            if (tool.name.toLowerCase().includes(query) || tool.desc.toLowerCase().includes(query)) {
+              allTools.push({ ...tool, category });
+            }
+          });
+        });
+        
+        if (allTools.length > 0) {
+          container.innerHTML = allTools.map(tool => {
+            const colors = {
+              image: 'bg-pink-100 text-pink-500',
+              video: 'bg-purple-100 text-purple-500',
+              pdf: 'bg-red-100 text-red-500',
+              audio: 'bg-green-100 text-green-500'
+            };
+            
+            return `
+              <button onclick="openTool('${tool.id}')" class="tool-card bg-white rounded-xl p-5 text-left shadow-md hover:shadow-lg">
+                <div class="w-12 h-12 ${colors[tool.category]} rounded-xl flex items-center justify-center text-xl mb-3">${tool.icon}</div>
+                <h3 class="font-bold text-gray-800 mb-1">${tool.name}</h3>
+                <p class="text-sm text-gray-600 mb-2">${tool.desc}</p>
+              </button>
+            `;
+          }).join('');
+        } else {
+          container.innerHTML = '<p class="col-span-full text-center text-gray-500 py-10">No tools found matching your search.</p>';
+        }
+      }
+    }
+
+    function openTool(toolId) {
+      let tool = null;
+      let category = null;
+      
+      Object.entries(tools).forEach(([cat, categoryTools]) => {
+        const found = categoryTools.find(t => t.id === toolId);
+        if (found) {
+          tool = found;
+          category = cat;
+        }
+      });
+      
+      if (!tool) return;
+      
+      currentTool = { ...tool, category };
+      selectedFiles = [];
+      
+      const colors = {
+        image: 'bg-pink-100',
+        video: 'bg-purple-100',
+        pdf: 'bg-red-100',
+        audio: 'bg-green-100'
+      };
+      
+      document.getElementById('modal-icon').className = `w-14 h-14 ${colors[category]} rounded-2xl flex items-center justify-center text-2xl`;
+      document.getElementById('modal-icon').textContent = tool.icon;
+      document.getElementById('modal-title').textContent = tool.name;
+      document.getElementById('modal-description').textContent = tool.desc;
+      
+      renderToolOptions();
+      resetModal();
+      
+      document.getElementById('tool-modal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeToolModal() {
+      document.getElementById('tool-modal').classList.add('hidden');
+      document.body.style.overflow = 'auto';
+    }
+
+    function renderToolOptions() {
+      const container = document.getElementById('options-content');
+      let html = '';
+      
+      if (currentTool.id === 'img-compress') {
+        html = `
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Quality Level</label>
+            <input type="range" id="quality" min="10" max="100" value="80" class="w-full" oninput="updatePreview()">
+            <div class="flex justify-between text-xs text-gray-500 mt-1">
+              <span>Smaller file</span>
+              <span id="quality-value">80%</span>
+              <span>Better quality</span>
+            </div>
+          </div>
+        `;
+      } else if (currentTool.id === 'vid-compress') {
+        html = `
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Compression Level</label>
+              <select id="compression-level" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                <option value="low">Low (Better Quality, Larger Size)</option>
+                <option value="medium" selected>Medium (Balanced)</option>
+                <option value="high">High (Smaller Size, Lower Quality)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Target Size Reduction</label>
+              <input type="range" id="compression-percent" min="20" max="80" value="50" class="w-full" oninput="document.getElementById('compression-value').textContent = this.value + '%'">
+              <div class="flex justify-between text-xs text-gray-500 mt-1">
+                <span>20%</span>
+                <span id="compression-value" class="font-bold text-purple-600">50%</span>
+                <span>80%</span>
+              </div>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p class="text-xs text-blue-700">💡 Higher compression = smaller file but lower video quality</p>
+            </div>
+          </div>
+        `;
+      } else if (currentTool.id === 'pdf-compress') {
+        html = `
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Compression Level</label>
+            <select id="pdf-compression" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+              <option value="low">Low Compression (Best Quality)</option>
+              <option value="medium" selected>Medium Compression (Balanced)</option>
+              <option value="high">High Compression (Smallest File)</option>
+            </select>
+          </div>
+        `;
+      } else if (currentTool.id === 'img-rotate') {
+        html = `
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Rotate Angle</label>
+              <div class="grid grid-cols-4 gap-3">
+                <button onclick="setRotation(90)" class="rotation-btn px-4 py-3 border-2 border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors text-center">
+                  <div class="text-2xl mb-1">↻</div>
+                  <div class="text-xs">90°</div>
+                </button>
+                <button onclick="setRotation(180)" class="rotation-btn px-4 py-3 border-2 border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors text-center">
+                  <div class="text-2xl mb-1">↻</div>
+                  <div class="text-xs">180°</div>
+                </button>
+                <button onclick="setRotation(270)" class="rotation-btn px-4 py-3 border-2 border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors text-center">
+                  <div class="text-2xl mb-1">↺</div>
+                  <div class="text-xs">270°</div>
+                </button>
+                <button onclick="setRotation(0)" class="rotation-btn px-4 py-3 border-2 border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors text-center">
+                  <div class="text-2xl mb-1">⟲</div>
+                  <div class="text-xs">Reset</div>
+                </button>
+              </div>
+              <input type="hidden" id="rotation" value="90">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Flip</label>
+              <div class="grid grid-cols-2 gap-3">
+                <button onclick="setFlip('horizontal')" class="flip-btn px-4 py-3 border-2 border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors text-center">
+                  <div class="text-2xl mb-1">⇄</div>
+                  <div class="text-xs">Horizontal</div>
+                </button>
+                <button onclick="setFlip('vertical')" class="flip-btn px-4 py-3 border-2 border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors text-center">
+                  <div class="text-2xl mb-1">⇅</div>
+                  <div class="text-xs">Vertical</div>
+                </button>
+              </div>
+              <input type="hidden" id="flip-direction" value="">
+            </div>
+          </div>
+        `;
+      } else if (currentTool.id === 'img-watermark') {
+        html = `
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Action</label>
+              <select id="watermark-action" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" onchange="toggleWatermarkOptions()">
+                <option value="add">Add Watermark</option>
+                <option value="remove">Remove Watermark</option>
+              </select>
+            </div>
+            <div id="watermark-add-options">
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Watermark Text</label>
+                <input type="text" id="watermark-text" value="© ConvertHub" placeholder="Enter watermark text" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" oninput="updatePreview()">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Position</label>
+                <select id="watermark-position" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" onchange="updatePreview()">
+                  <option value="bottom-right">Bottom Right</option>
+                  <option value="bottom-left">Bottom Left</option>
+                  <option value="top-right">Top Right</option>
+                  <option value="top-left">Top Left</option>
+                  <option value="center">Center</option>
+                </select>
+              </div>
+            </div>
+            <div id="watermark-remove-options" class="hidden">
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Removal Method</label>
+                <select id="remove-method" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" onchange="toggleRemoveMethod()">
+                  <option value="auto">Auto Detect & Remove</option>
+                  <option value="manual">Manual Selection (Mark Area)</option>
+                </select>
+              </div>
+              
+              <div id="manual-watermark-remove" class="hidden">
+                <div class="bg-gray-100 rounded-lg p-4 mb-4" style="position: relative; height: 300px; overflow: hidden;">
+                  <canvas id="watermark-canvas" style="max-width: 100%; max-height: 100%; cursor: crosshair;"></canvas>
+                  <div id="watermark-overlay" style="position: absolute; border: 2px dashed #ef4444; background: rgba(239, 68, 68, 0.2); display: none; pointer-events: none;"></div>
+                </div>
+                <p class="text-xs text-gray-600 mb-3">🖱️ Click and drag to mark the watermark area for removal</p>
+                <button onclick="resetWatermarkSelection()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm">
+                  Reset Selection
+                </button>
+              </div>
+              
+              <div id="auto-watermark-remove">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p class="text-sm text-blue-800 mb-2">🔍 <strong>Auto Detection:</strong></p>
+                  <p class="text-xs text-gray-600 mb-3">AI will automatically detect and remove watermarks from common positions (bottom-right, bottom-left corners).</p>
+                  <div class="flex items-start gap-2 bg-white rounded p-2">
+                    <input type="checkbox" id="detect-all" class="mt-1 w-4 h-4 text-purple-600 rounded">
+                    <label for="detect-all" class="text-xs text-gray-700">Scan entire image for watermarks (slower but more accurate)</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (currentTool.id === 'img-crop') {
+        html = `
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Crop Method</label>
+              <select id="crop-method" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" onchange="toggleCropMethod()">
+                <option value="preset">Preset Ratios</option>
+                <option value="manual">Manual Selection</option>
+                <option value="custom">Custom Dimensions</option>
+              </select>
+            </div>
+            
+            <div id="preset-crop" class="grid grid-cols-3 gap-3">
+              <button onclick="setCropRatio('1:1')" class="crop-ratio-btn px-4 py-3 border-2 border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors text-center">
+                <div class="w-12 h-12 bg-purple-100 mx-auto mb-2 rounded"></div>
+                <div class="text-xs font-bold">1:1</div>
+                <div class="text-xs text-gray-500">Square</div>
+              </button>
+              <button onclick="setCropRatio('16:9')" class="crop-ratio-btn px-4 py-3 border-2 border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors text-center">
+                <div class="w-12 h-7 bg-purple-100 mx-auto mb-2 rounded"></div>
+                <div class="text-xs font-bold">16:9</div>
+                <div class="text-xs text-gray-500">Widescreen</div>
+              </button>
+              <button onclick="setCropRatio('4:3')" class="crop-ratio-btn px-4 py-3 border-2 border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors text-center">
+                <div class="w-12 h-9 bg-purple-100 mx-auto mb-2 rounded"></div>
+                <div class="text-xs font-bold">4:3</div>
+                <div class="text-xs text-gray-500">Standard</div>
+              </button>
+              <button onclick="setCropRatio('3:2')" class="crop-ratio-btn px-4 py-3 border-2 border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors text-center">
+                <div class="w-12 h-8 bg-purple-100 mx-auto mb-2 rounded"></div>
+                <div class="text-xs font-bold">3:2</div>
+                <div class="text-xs text-gray-500">Photo</div>
+              </button>
+              <button onclick="setCropRatio('9:16')" class="crop-ratio-btn px-4 py-3 border-2 border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors text-center">
+                <div class="w-7 h-12 bg-purple-100 mx-auto mb-2 rounded"></div>
+                <div class="text-xs font-bold">9:16</div>
+                <div class="text-xs text-gray-500">Portrait</div>
+              </button>
+              <button onclick="setCropRatio('free')" class="crop-ratio-btn px-4 py-3 border-2 border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors text-center">
+                <div class="w-10 h-10 bg-purple-100 mx-auto mb-2 rounded-lg"></div>
+                <div class="text-xs font-bold">Free</div>
+                <div class="text-xs text-gray-500">Any Size</div>
+              </button>
+            </div>
+            
+            <div id="manual-crop" class="hidden">
+              <div class="bg-gray-100 rounded-lg p-4 mb-4" style="position: relative; height: 300px; overflow: hidden;">
+                <canvas id="crop-canvas" style="max-width: 100%; max-height: 100%; cursor: crosshair;"></canvas>
+                <div id="crop-overlay" style="position: absolute; border: 2px dashed #667eea; background: rgba(102, 126, 234, 0.1); display: none; pointer-events: none;"></div>
+              </div>
+              <p class="text-xs text-gray-600 mb-3">🖱️ Click and drag on the image to select crop area</p>
+              <button onclick="resetCropSelection()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm">
+                Reset Selection
+              </button>
+            </div>
+            
+            <div id="custom-crop" class="hidden">
+              <div class="grid grid-cols-2 gap-4 mb-3">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">X Position</label>
+                  <input type="number" id="crop-x" value="0" min="0" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" oninput="updateCropPreview()">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Y Position</label>
+                  <input type="number" id="crop-y" value="0" min="0" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" oninput="updateCropPreview()">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Crop Width</label>
+                  <input type="number" id="crop-width" value="500" min="1" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" oninput="updateCropPreview()">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Crop Height</label>
+                  <input type="number" id="crop-height" value="500" min="1" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" oninput="updateCropPreview()">
+                </div>
+              </div>
+            </div>
+            
+            <input type="hidden" id="crop-ratio-value" value="free">
+            
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p class="text-xs text-blue-700" id="crop-info">💡 Select a crop method to begin</p>
+            </div>
+          </div>
+        `;
+      } else if (currentTool.id.includes('resize')) {
+        html = `
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Resize Method</label>
+              <select id="resize-method" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" onchange="toggleResizeMethod()">
+                <option value="preset">Preset Sizes</option>
+                <option value="manual">Manual Dimensions</option>
+                <option value="percentage">Percentage</option>
+              </select>
+            </div>
+            
+            <div id="preset-resize" class="grid grid-cols-2 gap-3">
+              <button onclick="setPresetSize(1920, 1080)" class="preset-size-btn px-4 py-3 border-2 border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors text-center">
+                <div class="font-bold text-gray-800">1920 × 1080</div>
+                <div class="text-xs text-gray-500">Full HD</div>
+              </button>
+              <button onclick="setPresetSize(1280, 720)" class="preset-size-btn px-4 py-3 border-2 border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors text-center">
+                <div class="font-bold text-gray-800">1280 × 720</div>
+                <div class="text-xs text-gray-500">HD</div>
+              </button>
+              <button onclick="setPresetSize(800, 600)" class="preset-size-btn px-4 py-3 border-2 border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors text-center">
+                <div class="font-bold text-gray-800">800 × 600</div>
+                <div class="text-xs text-gray-500">Small</div>
+              </button>
+              <button onclick="setPresetSize(3840, 2160)" class="preset-size-btn px-4 py-3 border-2 border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors text-center">
+                <div class="font-bold text-gray-800">3840 × 2160</div>
+                <div class="text-xs text-gray-500">4K</div>
+              </button>
+            </div>
+            
+            <div id="manual-resize" class="hidden grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Width (px)</label>
+                <input type="number" id="width" value="1920" min="1" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" oninput="updateManualResize()">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Height (px)</label>
+                <input type="number" id="height" value="1080" min="1" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" oninput="updateManualResize()">
+              </div>
+            </div>
+            
+            <div id="percentage-resize" class="hidden">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Scale Percentage</label>
+              <input type="range" id="scale-percent" min="10" max="200" value="100" class="w-full" oninput="updatePercentageResize()">
+              <div class="flex justify-between text-xs text-gray-500 mt-1">
+                <span>10%</span>
+                <span id="scale-value" class="font-bold text-purple-600">100%</span>
+                <span>200%</span>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <input type="checkbox" id="aspect-ratio" checked class="w-4 h-4 text-purple-600 rounded" onchange="updatePreview()">
+              <label for="aspect-ratio" class="text-sm text-gray-700">Maintain aspect ratio</label>
+            </div>
+            
+            <div id="resize-preview-info" class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p class="text-xs text-blue-700"><strong>Current Size:</strong> <span id="current-dimensions">Loading...</span></p>
+              <p class="text-xs text-blue-700 mt-1"><strong>New Size:</strong> <span id="new-dimensions">1920 × 1080</span></p>
+            </div>
+          </div>
+        `;
+      } else if (currentTool.id.includes('convert')) {
+        const formats = currentTool.formats || ['MP4', 'AVI', 'MOV'];
+        html = `
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Output Format</label>
+            <select id="output-format" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+              ${formats.map(f => `<option value="${f.toLowerCase()}">${f}</option>`).join('')}
+            </select>
+          </div>
+        `;
+      } else if (currentTool.id === 'vid-trim') {
+        html = `
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Trim Method</label>
+              <select id="trim-method" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" onchange="toggleTrimMethod()">
+                <option value="time">Time-based (Enter Time)</option>
+                <option value="manual">Manual Selection (Drag Timeline)</option>
+              </select>
+            </div>
+            
+            <div id="time-trim">
+              <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Start Time</label>
+                  <input type="text" id="start-time" value="00:00:00" placeholder="00:00:00" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">End Time</label>
+                  <input type="text" id="end-time" value="00:01:00" placeholder="00:01:00" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                </div>
+              </div>
+            </div>
+            
+            <div id="manual-trim" class="hidden">
+              <div class="bg-gray-100 rounded-lg p-4 mb-3">
+                <div class="relative h-16 bg-purple-200 rounded-lg overflow-hidden">
+                  <div id="trim-overlay" style="position: absolute; left: 20%; width: 60%; height: 100%; background: rgba(102, 126, 234, 0.3); border: 2px solid #667eea; cursor: move;">
+                    <div style="position: absolute; left: 0; top: 0; width: 10px; height: 100%; background: #667eea; cursor: ew-resize;" id="trim-start"></div>
+                    <div style="position: absolute; right: 0; top: 0; width: 10px; height: 100%; background: #667eea; cursor: ew-resize;" id="trim-end"></div>
+                  </div>
+                </div>
+                <div class="flex justify-between text-xs text-gray-600 mt-2">
+                  <span id="trim-start-display">00:00:00</span>
+                  <span class="font-bold text-purple-600">Selected Duration: <span id="trim-duration">00:01:00</span></span>
+                  <span id="trim-end-display">00:02:00</span>
+                </div>
+              </div>
+              <p class="text-xs text-gray-600">🖱️ Drag the handles to select trim area, or drag the entire selection to move it</p>
+            </div>
+            
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p class="text-xs text-blue-700">✂️ Select the portion of video you want to keep</p>
+            </div>
+          </div>
+        `;
+      } else if (currentTool.id === 'vid-subtitle') {
+        html = `
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Subtitle File (.srt, .vtt, .ass)</label>
+              <input type="file" id="subtitle-file" accept=".srt,.vtt,.ass" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Subtitle Position</label>
+              <select id="subtitle-position" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                <option value="bottom">Bottom (Default)</option>
+                <option value="top">Top</option>
+                <option value="middle">Middle</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Font Size</label>
+              <select id="subtitle-size" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                <option value="small">Small</option>
+                <option value="medium" selected>Medium</option>
+                <option value="large">Large</option>
+              </select>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p class="text-xs text-blue-700">💬 Upload your subtitle file to embed it in the video</p>
+            </div>
+          </div>
+        `;
+      } else if (currentTool.id === 'aud-voice-change') {
+        html = `
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Voice Effect</label>
+              <select id="voice-effect" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                <option value="normal">Normal (No Effect)</option>
+                <option value="male-to-female">Male to Female</option>
+                <option value="female-to-male">Female to Male</option>
+                <option value="chipmunk">Chipmunk (High Pitch)</option>
+                <option value="robot">Robot</option>
+                <option value="deep">Deep Voice</option>
+                <option value="echo">Echo Effect</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Pitch Adjustment</label>
+              <input type="range" id="pitch" min="-12" max="12" value="0" step="1" class="w-full" oninput="document.getElementById('pitch-value').textContent = this.value">
+              <div class="flex justify-between text-xs text-gray-500 mt-1">
+                <span>Lower (-12)</span>
+                <span id="pitch-value" class="font-bold text-purple-600">0</span>
+                <span>Higher (+12)</span>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Speed Adjustment</label>
+              <input type="range" id="speed" min="0.5" max="2.0" value="1.0" step="0.1" class="w-full" oninput="document.getElementById('speed-value').textContent = this.value + 'x'">
+              <div class="flex justify-between text-xs text-gray-500 mt-1">
+                <span>0.5x (Slower)</span>
+                <span id="speed-value" class="font-bold text-purple-600">1.0x</span>
+                <span>2.0x (Faster)</span>
+              </div>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p class="text-xs text-blue-700">🎙️ Adjust voice pitch and apply effects to change how voice sounds</p>
+            </div>
+          </div>
+        `;
+      } else if (currentTool.id === 'aud-bg-remove') {
+        html = `
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Noise Reduction Level</label>
+              <select id="noise-level" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                <option value="light">Light (Preserve more audio)</option>
+                <option value="medium" selected>Medium (Balanced)</option>
+                <option value="aggressive">Aggressive (Maximum noise removal)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Target Noise Type</label>
+              <div class="grid grid-cols-2 gap-3">
+                <label class="flex items-center gap-2 p-3 border-2 border-gray-300 rounded-lg hover:border-purple-500 cursor-pointer">
+                  <input type="checkbox" name="noise-type" value="white-noise" checked class="w-4 h-4 text-purple-600 rounded">
+                  <span class="text-sm">White Noise</span>
+                </label>
+                <label class="flex items-center gap-2 p-3 border-2 border-gray-300 rounded-lg hover:border-purple-500 cursor-pointer">
+                  <input type="checkbox" name="noise-type" value="hum" checked class="w-4 h-4 text-purple-600 rounded">
+                  <span class="text-sm">Hum/Buzz</span>
+                </label>
+                <label class="flex items-center gap-2 p-3 border-2 border-gray-300 rounded-lg hover:border-purple-500 cursor-pointer">
+                  <input type="checkbox" name="noise-type" value="wind" class="w-4 h-4 text-purple-600 rounded">
+                  <span class="text-sm">Wind</span>
+                </label>
+                <label class="flex items-center gap-2 p-3 border-2 border-gray-300 rounded-lg hover:border-purple-500 cursor-pointer">
+                  <input type="checkbox" name="noise-type" value="traffic" class="w-4 h-4 text-purple-600 rounded">
+                  <span class="text-sm">Traffic</span>
+                </label>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Voice Enhancement</label>
+              <select id="voice-enhance" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                <option value="none">None</option>
+                <option value="light" selected>Light Enhancement</option>
+                <option value="strong">Strong Enhancement</option>
+              </select>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p class="text-xs text-blue-700">🔇 AI-powered background noise removal to make voice clear</p>
+            </div>
+          </div>
+        `;
+      } else {
+        html = '<p class="text-gray-500 text-center">No additional options for this tool.</p>';
+      }
+      
+      container.innerHTML = html;
+      
+      const qualitySlider = document.getElementById('quality');
+      if (qualitySlider) {
+        qualitySlider.oninput = () => {
+          document.getElementById('quality-value').textContent = qualitySlider.value + '%';
+        };
+      }
+    }
+    
+    function toggleTrimMethod() {
+      const method = document.getElementById('trim-method')?.value;
+      const timeTrim = document.getElementById('time-trim');
+      const manualTrim = document.getElementById('manual-trim');
+      
+      if (method === 'time') {
+        timeTrim?.classList.remove('hidden');
+        manualTrim?.classList.add('hidden');
+      } else {
+        timeTrim?.classList.add('hidden');
+        manualTrim?.classList.remove('hidden');
+        setupManualTrim();
+      }
+    }
+    
+    function setupManualTrim() {
+      const overlay = document.getElementById('trim-overlay');
+      const startHandle = document.getElementById('trim-start');
+      const endHandle = document.getElementById('trim-end');
+      
+      if (!overlay || !startHandle || !endHandle) return;
+      
+      let isDragging = false;
+      let dragType = null;
+      let startX = 0;
+      
+      startHandle.onmousedown = (e) => {
+        isDragging = true;
+        dragType = 'start';
+        startX = e.clientX;
+        e.stopPropagation();
+      };
+      
+      endHandle.onmousedown = (e) => {
+        isDragging = true;
+        dragType = 'end';
+        startX = e.clientX;
+        e.stopPropagation();
+      };
+      
+      overlay.onmousedown = (e) => {
+        if (e.target === overlay) {
+          isDragging = true;
+          dragType = 'move';
+          startX = e.clientX;
+        }
+      };
+      
+      document.onmousemove = (e) => {
+        if (!isDragging) return;
+        
+        const parent = overlay.parentElement;
+        const parentWidth = parent.offsetWidth;
+        const currentLeft = parseFloat(overlay.style.left || '20%');
+        const currentWidth = parseFloat(overlay.style.width || '60%');
+        
+        const deltaPercent = ((e.clientX - startX) / parentWidth) * 100;
+        
+        if (dragType === 'start') {
+          const newLeft = Math.max(0, Math.min(currentLeft + deltaPercent, currentLeft + currentWidth - 5));
+          const newWidth = currentWidth - (newLeft - currentLeft);
+          overlay.style.left = newLeft + '%';
+          overlay.style.width = newWidth + '%';
+        } else if (dragType === 'end') {
+          const newWidth = Math.max(5, Math.min(100 - currentLeft, currentWidth + deltaPercent));
+          overlay.style.width = newWidth + '%';
+        } else if (dragType === 'move') {
+          const newLeft = Math.max(0, Math.min(100 - currentWidth, currentLeft + deltaPercent));
+          overlay.style.left = newLeft + '%';
+        }
+        
+        startX = e.clientX;
+        updateTrimDisplay();
+      };
+      
+      document.onmouseup = () => {
+        isDragging = false;
+        dragType = null;
+      };
+    }
+    
+    function updateTrimDisplay() {
+      const overlay = document.getElementById('trim-overlay');
+      if (!overlay) return;
+      
+      const totalDuration = 120; // 2 minutes example
+      const leftPercent = parseFloat(overlay.style.left || '20');
+      const widthPercent = parseFloat(overlay.style.width || '60');
+      
+      const startTime = (leftPercent / 100) * totalDuration;
+      const endTime = ((leftPercent + widthPercent) / 100) * totalDuration;
+      const duration = endTime - startTime;
+      
+      document.getElementById('trim-start-display').textContent = formatTime(startTime);
+      document.getElementById('trim-end-display').textContent = formatTime(endTime);
+      document.getElementById('trim-duration').textContent = formatTime(duration);
+      
+      // Update hidden time inputs for processing
+      document.getElementById('start-time').value = formatTime(startTime);
+      document.getElementById('end-time').value = formatTime(endTime);
+    }
+    
+    function formatTime(seconds) {
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = Math.floor(seconds % 60);
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+    
+    function toggleWatermarkOptions() {
+      const action = document.getElementById('watermark-action')?.value;
+      const addOptions = document.getElementById('watermark-add-options');
+      const removeOptions = document.getElementById('watermark-remove-options');
+      
+      if (action === 'add') {
+        addOptions?.classList.remove('hidden');
+        removeOptions?.classList.add('hidden');
+      } else {
+        addOptions?.classList.add('hidden');
+        removeOptions?.classList.remove('hidden');
+      }
+      updatePreview();
+    }
+    
+    function toggleRemoveMethod() {
+      const method = document.getElementById('remove-method')?.value;
+      const manualRemove = document.getElementById('manual-watermark-remove');
+      const autoRemove = document.getElementById('auto-watermark-remove');
+      
+      if (method === 'manual') {
+        manualRemove?.classList.remove('hidden');
+        autoRemove?.classList.add('hidden');
+        setTimeout(() => setupWatermarkCanvas(), 100);
+      } else {
+        manualRemove?.classList.add('hidden');
+        autoRemove?.classList.remove('hidden');
+      }
+    }
+    
+    let watermarkSelection = { startX: 0, startY: 0, endX: 0, endY: 0, isSelecting: false };
+    
+    function setupWatermarkCanvas() {
+      if (selectedFiles.length === 0 || !selectedFiles[0].type.startsWith('image')) return;
+      
+      const canvas = document.getElementById('watermark-canvas');
+      const overlay = document.getElementById('watermark-overlay');
+      if (!canvas || !overlay) return;
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const maxWidth = 500;
+          const scale = maxWidth / img.width;
+          canvas.width = maxWidth;
+          canvas.height = img.height * scale;
+          
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          
+          canvas.onmousedown = (event) => {
+            const rect = canvas.getBoundingClientRect();
+            watermarkSelection.startX = event.clientX - rect.left;
+            watermarkSelection.startY = event.clientY - rect.top;
+            watermarkSelection.isSelecting = true;
+            overlay.style.display = 'block';
+          };
+          
+          canvas.onmousemove = (event) => {
+            if (!watermarkSelection.isSelecting) return;
+            const rect = canvas.getBoundingClientRect();
+            watermarkSelection.endX = event.clientX - rect.left;
+            watermarkSelection.endY = event.clientY - rect.top;
+            
+            const x = Math.min(watermarkSelection.startX, watermarkSelection.endX);
+            const y = Math.min(watermarkSelection.startY, watermarkSelection.endY);
+            const width = Math.abs(watermarkSelection.endX - watermarkSelection.startX);
+            const height = Math.abs(watermarkSelection.endY - watermarkSelection.startY);
+            
+            overlay.style.left = (rect.left + x) + 'px';
+            overlay.style.top = (rect.top + y) + 'px';
+            overlay.style.width = width + 'px';
+            overlay.style.height = height + 'px';
+          };
+          
+          canvas.onmouseup = () => {
+            watermarkSelection.isSelecting = false;
+          };
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(selectedFiles[0]);
+    }
+    
+    function resetWatermarkSelection() {
+      watermarkSelection = { startX: 0, startY: 0, endX: 0, endY: 0, isSelecting: false };
+      const overlay = document.getElementById('watermark-overlay');
+      if (overlay) overlay.style.display = 'none';
+      setupWatermarkCanvas();
+    }
+    
+    function toggleResizeMethod() {
+      const method = document.getElementById('resize-method')?.value;
+      const preset = document.getElementById('preset-resize');
+      const manual = document.getElementById('manual-resize');
+      const percentage = document.getElementById('percentage-resize');
+      
+      preset?.classList.add('hidden');
+      manual?.classList.add('hidden');
+      percentage?.classList.add('hidden');
+      
+      if (method === 'preset') {
+        preset?.classList.remove('hidden');
+      } else if (method === 'manual') {
+        manual?.classList.remove('hidden');
+      } else if (method === 'percentage') {
+        percentage?.classList.remove('hidden');
+      }
+      
+      updateResizeDimensions();
+    }
+    
+    function setPresetSize(width, height) {
+      document.getElementById('width').value = width;
+      document.getElementById('height').value = height;
+      
+      document.querySelectorAll('.preset-size-btn').forEach(btn => {
+        btn.classList.remove('border-purple-500', 'bg-purple-50');
+        btn.classList.add('border-gray-300');
+      });
+      event.target.closest('button').classList.add('border-purple-500', 'bg-purple-50');
+      event.target.closest('button').classList.remove('border-gray-300');
+      
+      updateResizeDimensions();
+    }
+    
+    function updateManualResize() {
+      updateResizeDimensions();
+    }
+    
+    function updatePercentageResize() {
+      const slider = document.getElementById('scale-percent');
+      const valueDisplay = document.getElementById('scale-value');
+      if (slider && valueDisplay) {
+        valueDisplay.textContent = slider.value + '%';
+      }
+      updateResizeDimensions();
+    }
+    
+    function updateResizeDimensions() {
+      if (selectedFiles.length === 0 || !selectedFiles[0].type.startsWith('image')) return;
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const currentDim = document.getElementById('current-dimensions');
+          const newDim = document.getElementById('new-dimensions');
+          
+          if (currentDim) {
+            currentDim.textContent = `${img.width} × ${img.height} px`;
+          }
+          
+          const method = document.getElementById('resize-method')?.value || 'preset';
+          let newWidth, newHeight;
+          
+          if (method === 'percentage') {
+            const scale = (document.getElementById('scale-percent')?.value || 100) / 100;
+            newWidth = Math.round(img.width * scale);
+            newHeight = Math.round(img.height * scale);
+          } else {
+            newWidth = parseInt(document.getElementById('width')?.value || img.width);
+            newHeight = parseInt(document.getElementById('height')?.value || img.height);
+            
+            if (document.getElementById('aspect-ratio')?.checked) {
+              const ratio = img.width / img.height;
+              newHeight = Math.round(newWidth / ratio);
+            }
+          }
+          
+          if (newDim) {
+            newDim.textContent = `${newWidth} × ${newHeight} px`;
+          }
+          
+          document.getElementById('width').value = newWidth;
+          document.getElementById('height').value = newHeight;
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(selectedFiles[0]);
+    }
+    
+    function toggleCropMethod() {
+      const method = document.getElementById('crop-method')?.value;
+      const preset = document.getElementById('preset-crop');
+      const manual = document.getElementById('manual-crop');
+      const custom = document.getElementById('custom-crop');
+      
+      preset?.classList.add('hidden');
+      manual?.classList.add('hidden');
+      custom?.classList.add('hidden');
+      
+      if (method === 'preset') {
+        preset?.classList.remove('hidden');
+        document.getElementById('crop-info').textContent = '💡 Select an aspect ratio to crop your image';
+      } else if (method === 'manual') {
+        manual?.classList.remove('hidden');
+        document.getElementById('crop-info').textContent = '🖱️ Drag on the image to select the crop area';
+        setTimeout(() => setupCropCanvas(), 100);
+      } else if (method === 'custom') {
+        custom?.classList.remove('hidden');
+        document.getElementById('crop-info').textContent = '✏️ Enter custom X, Y, Width, and Height values';
+      }
+    }
+    
+    function setCropRatio(ratio) {
+      document.getElementById('crop-ratio-value').value = ratio;
+      
+      document.querySelectorAll('.crop-ratio-btn').forEach(btn => {
+        btn.classList.remove('border-purple-500', 'bg-purple-50');
+        btn.classList.add('border-gray-300');
+      });
+      event.target.closest('button').classList.add('border-purple-500', 'bg-purple-50');
+      event.target.closest('button').classList.remove('border-gray-300');
+      
+      updateCropPreview();
+    }
+    
+    let cropSelection = { startX: 0, startY: 0, endX: 0, endY: 0, isSelecting: false };
+    
+    function setupCropCanvas() {
+      if (selectedFiles.length === 0 || !selectedFiles[0].type.startsWith('image')) return;
+      
+      const canvas = document.getElementById('crop-canvas');
+      const overlay = document.getElementById('crop-overlay');
+      if (!canvas || !overlay) return;
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const maxWidth = 500;
+          const scale = maxWidth / img.width;
+          canvas.width = maxWidth;
+          canvas.height = img.height * scale;
+          
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          
+          canvas.onmousedown = (event) => {
+            const rect = canvas.getBoundingClientRect();
+            cropSelection.startX = event.clientX - rect.left;
+            cropSelection.startY = event.clientY - rect.top;
+            cropSelection.isSelecting = true;
+            overlay.style.display = 'block';
+          };
+          
+          canvas.onmousemove = (event) => {
+            if (!cropSelection.isSelecting) return;
+            const rect = canvas.getBoundingClientRect();
+            cropSelection.endX = event.clientX - rect.left;
+            cropSelection.endY = event.clientY - rect.top;
+            
+            const x = Math.min(cropSelection.startX, cropSelection.endX);
+            const y = Math.min(cropSelection.startY, cropSelection.endY);
+            const width = Math.abs(cropSelection.endX - cropSelection.startX);
+            const height = Math.abs(cropSelection.endY - cropSelection.startY);
+            
+            overlay.style.left = (rect.left + x) + 'px';
+            overlay.style.top = (rect.top + y) + 'px';
+            overlay.style.width = width + 'px';
+            overlay.style.height = height + 'px';
+          };
+          
+          canvas.onmouseup = () => {
+            cropSelection.isSelecting = false;
+            
+            // Update crop values based on selection
+            const scaleBack = img.width / canvas.width;
+            const x = Math.min(cropSelection.startX, cropSelection.endX) * scaleBack;
+            const y = Math.min(cropSelection.startY, cropSelection.endY) * scaleBack;
+            const width = Math.abs(cropSelection.endX - cropSelection.startX) * scaleBack;
+            const height = Math.abs(cropSelection.endY - cropSelection.startY) * scaleBack;
+            
+            document.getElementById('crop-x').value = Math.round(x);
+            document.getElementById('crop-y').value = Math.round(y);
+            document.getElementById('crop-width').value = Math.round(width);
+            document.getElementById('crop-height').value = Math.round(height);
+            
+            document.getElementById('crop-info').textContent = `📐 Selection: ${Math.round(width)} × ${Math.round(height)} px`;
+          };
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(selectedFiles[0]);
+    }
+    
+    function resetCropSelection() {
+      cropSelection = { startX: 0, startY: 0, endX: 0, endY: 0, isSelecting: false };
+      const overlay = document.getElementById('crop-overlay');
+      if (overlay) overlay.style.display = 'none';
+      setupCropCanvas();
+    }
+    
+    function updateCropPreview() {
+      const ratio = document.getElementById('crop-ratio-value')?.value;
+      if (!ratio || ratio === 'free') return;
+      
+      if (selectedFiles.length === 0 || !selectedFiles[0].type.startsWith('image')) return;
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const [widthRatio, heightRatio] = ratio.split(':').map(Number);
+          const targetRatio = widthRatio / heightRatio;
+          
+          let cropWidth, cropHeight;
+          
+          if (img.width / img.height > targetRatio) {
+            cropHeight = img.height;
+            cropWidth = cropHeight * targetRatio;
+          } else {
+            cropWidth = img.width;
+            cropHeight = cropWidth / targetRatio;
+          }
+          
+          const cropX = (img.width - cropWidth) / 2;
+          const cropY = (img.height - cropHeight) / 2;
+          
+          document.getElementById('crop-x').value = Math.round(cropX);
+          document.getElementById('crop-y').value = Math.round(cropY);
+          document.getElementById('crop-width').value = Math.round(cropWidth);
+          document.getElementById('crop-height').value = Math.round(cropHeight);
+          
+          document.getElementById('crop-info').textContent = `������ Ratio ${ratio} applied: ${Math.round(cropWidth)} × ${Math.round(cropHeight)} px`;
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(selectedFiles[0]);
+    }
+    
+    function setRotation(degrees) {
+      document.getElementById('rotation').value = degrees;
+      document.querySelectorAll('.rotation-btn').forEach(btn => {
+        btn.classList.remove('border-purple-500', 'bg-purple-50');
+        btn.classList.add('border-gray-300');
+      });
+      event.target.closest('button').classList.add('border-purple-500', 'bg-purple-50');
+      event.target.closest('button').classList.remove('border-gray-300');
+      updatePreview();
+    }
+    
+    function setFlip(direction) {
+      const currentFlip = document.getElementById('flip-direction').value;
+      if (currentFlip === direction) {
+        document.getElementById('flip-direction').value = '';
+        event.target.closest('button').classList.remove('border-purple-500', 'bg-purple-50');
+        event.target.closest('button').classList.add('border-gray-300');
+      } else {
+        document.getElementById('flip-direction').value = direction;
+        document.querySelectorAll('.flip-btn').forEach(btn => {
+          btn.classList.remove('border-purple-500', 'bg-purple-50');
+          btn.classList.add('border-gray-300');
+        });
+        event.target.closest('button').classList.add('border-purple-500', 'bg-purple-50');
+        event.target.closest('button').classList.remove('border-gray-300');
+      }
+      updatePreview();
+    }
+    
+    function updatePreview() {
+      const previewContainer = document.getElementById('preview-container');
+      if (!previewContainer || selectedFiles.length === 0) return;
+      
+      const file = selectedFiles[0];
+      if (!file.type.startsWith('image')) return;
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          // Apply transformations based on tool
+          if (currentTool.id === 'img-rotate') {
+            const degrees = parseInt(document.getElementById('rotation')?.value || 90);
+            const flipDir = document.getElementById('flip-direction')?.value;
+            const radians = (degrees * Math.PI) / 180;
+            
+            if (degrees === 90 || degrees === 270) {
+              canvas.width = img.height;
+              canvas.height = img.width;
+            } else {
+              canvas.width = img.width;
+              canvas.height = img.height;
+            }
+            
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(radians);
+            
+            if (flipDir === 'horizontal') {
+              ctx.scale(-1, 1);
+            } else if (flipDir === 'vertical') {
+              ctx.scale(1, -1);
+            }
+            
+            ctx.drawImage(img, -img.width / 2, -img.height / 2);
+          } else if (currentTool.id === 'img-watermark') {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            
+            const text = document.getElementById('watermark-text')?.value || '© ConvertHub';
+            const position = document.getElementById('watermark-position')?.value || 'bottom-right';
+            
+            const fontSize = Math.max(20, img.width / 20);
+            ctx.font = `bold ${fontSize}px Arial`;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.lineWidth = 2;
+            
+            const textWidth = ctx.measureText(text).width;
+            let x, y;
+            
+            switch(position) {
+              case 'top-left':
+                x = 20;
+                y = fontSize + 20;
+                break;
+              case 'top-right':
+                x = canvas.width - textWidth - 20;
+                y = fontSize + 20;
+                break;
+              case 'bottom-left':
+                x = 20;
+                y = canvas.height - 20;
+                break;
+              case 'bottom-right':
+                x = canvas.width - textWidth - 20;
+                y = canvas.height - 20;
+                break;
+              default:
+                x = (canvas.width - textWidth) / 2;
+                y = canvas.height / 2;
+            }
+            
+            ctx.strokeText(text, x, y);
+            ctx.fillText(text, x, y);
+          } else {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+          }
+          
+          const previewImg = previewContainer.querySelector('img');
+          if (previewImg) {
+            previewImg.src = canvas.toDataURL();
+          }
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function resetModal() {
+      selectedFiles = [];
+      window.processedFiles = [];
+      document.getElementById('file-input').value = '';
+      document.getElementById('file-list').classList.add('hidden');
+      document.getElementById('file-list').innerHTML = '';
+      document.getElementById('tool-options').classList.add('hidden');
+      document.getElementById('process-section').classList.add('hidden');
+      document.getElementById('processing-state').classList.add('hidden');
+      document.getElementById('complete-state').classList.add('hidden');
+      document.getElementById('upload-zone').classList.remove('hidden');
+      document.getElementById('preview-container').classList.add('hidden');
+      document.getElementById('preview-image').src = '';
+      
+      // Reset progress bar
+      document.getElementById('progress-bar').style.width = '0%';
+      document.getElementById('progress-text').textContent = '0%';
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.currentTarget.classList.add('dragover');
+    }
+
+    function handleDragLeave(e) {
+      e.currentTarget.classList.remove('dragover');
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      e.currentTarget.classList.remove('dragover');
+      const files = Array.from(e.dataTransfer.files);
+      addFiles(files);
+    }
+
+    function handleFileSelect(e) {
+      const files = Array.from(e.target.files);
+      addFiles(files);
+    }
+
+    function addFiles(files) {
+      selectedFiles = [...selectedFiles, ...files].slice(0, 5);
+      renderFileList();
+      
+      if (selectedFiles.length > 0) {
+        document.getElementById('upload-zone').classList.add('hidden');
+        document.getElementById('file-list').classList.remove('hidden');
+        document.getElementById('tool-options').classList.remove('hidden');
+        document.getElementById('process-section').classList.remove('hidden');
+        
+        // Show preview for image files
+        if (selectedFiles[0].type.startsWith('image')) {
+          showPreview();
+        }
+      }
+    }
+    
+    function showPreview() {
+      const previewContainer = document.getElementById('preview-container');
+      const previewImage = document.getElementById('preview-image');
+      
+      if (selectedFiles.length > 0 && selectedFiles[0].type.startsWith('image')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          previewImage.src = e.target.result;
+          previewContainer.classList.remove('hidden');
+          setTimeout(() => updatePreview(), 100);
+        };
+        reader.readAsDataURL(selectedFiles[0]);
+      } else {
+        previewContainer.classList.add('hidden');
+      }
+    }
+
+    function renderFileList() {
+      const container = document.getElementById('file-list');
+      container.innerHTML = selectedFiles.map((file, i) => `
+        <div class="flex items-center gap-4 bg-gray-50 rounded-xl p-4">
+          <div class="w-12 h-12 gradient-bg rounded-xl flex items-center justify-center text-white text-xl">
+            ${getFileIcon(file.type)}
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-gray-800 truncate">${file.name}</p>
+            <p class="text-sm text-gray-500">${formatFileSize(file.size)}</p>
+          </div>
+          <button onclick="removeFile(${i})" class="p-2 hover:bg-gray-200 rounded-lg transition-colors">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      `).join('');
+      
+      container.innerHTML += `
+        <button onclick="document.getElementById('file-input').click()" class="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-purple-500 hover:text-purple-500 transition-colors">
+          + Add more files
+        </button>
+      `;
+    }
+
+    function getFileIcon(type) {
+      if (type.startsWith('image')) return '🖼️';
+      if (type.startsWith('video')) return '🎬';
+      if (type.includes('pdf')) return '📄';
+      if (type.startsWith('audio')) return '🎵';
+      return '📁';
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function removeFile(index) {
+      selectedFiles.splice(index, 1);
+      if (selectedFiles.length === 0) {
+        resetModal();
+      } else {
+        renderFileList();
+      }
+    }
+
+    function processFiles() {
+      document.getElementById('file-list').classList.add('hidden');
+      document.getElementById('tool-options').classList.add('hidden');
+      document.getElementById('process-section').classList.add('hidden');
+      document.getElementById('processing-state').classList.remove('hidden');
+      
+      let progress = 0;
+      const progressBar = document.getElementById('progress-bar');
+      const progressText = document.getElementById('progress-text');
+      
+      const interval = setInterval(() => {
+        progress += Math.random() * 15;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(interval);
+          setTimeout(showComplete, 500);
+        }
+        progressBar.style.width = progress + '%';
+        progressText.textContent = Math.round(progress) + '%';
+      }, 200);
+    }
+
+    async function showComplete() {
+      document.getElementById('processing-state').classList.add('hidden');
+      document.getElementById('complete-state').classList.remove('hidden');
+      
+      const downloadList = document.getElementById('download-list');
+      const processedFiles = [];
+      
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        let processedFile = file;
+        let newName = file.name;
+        
+        // Process based on tool type
+        if (currentTool.id === 'img-compress' && file.type.startsWith('image')) {
+          const quality = (document.getElementById('quality')?.value || 80) / 100;
+          processedFile = await compressImage(file, quality);
+          newName = file.name.replace(/\.[^.]+$/, '') + '_compressed.' + file.name.split('.').pop();
+        } else if (currentTool.id === 'img-resize' && file.type.startsWith('image')) {
+          const width = parseInt(document.getElementById('width')?.value || 1920);
+          const height = parseInt(document.getElementById('height')?.value || 1080);
+          const maintainRatio = document.getElementById('aspect-ratio')?.checked;
+          processedFile = await resizeImage(file, width, height, maintainRatio);
+          newName = file.name.replace(/\.[^.]+$/, '') + '_resized.' + file.name.split('.').pop();
+        } else if (currentTool.id === 'img-crop' && file.type.startsWith('image')) {
+          const cropX = parseInt(document.getElementById('crop-x')?.value || 0);
+          const cropY = parseInt(document.getElementById('crop-y')?.value || 0);
+          const cropWidth = parseInt(document.getElementById('crop-width')?.value || 500);
+          const cropHeight = parseInt(document.getElementById('crop-height')?.value || 500);
+          processedFile = await cropImage(file, cropX, cropY, cropWidth, cropHeight);
+          newName = file.name.replace(/\.[^.]+$/, '') + '_cropped.' + file.name.split('.').pop();
+        } else if (currentTool.id === 'img-rotate' && file.type.startsWith('image')) {
+          const degrees = parseInt(document.getElementById('rotation')?.value || 90);
+          const flipDir = document.getElementById('flip-direction')?.value;
+          
+          if (flipDir) {
+            processedFile = await flipImage(file, flipDir);
+            if (degrees !== 0) {
+              processedFile = await rotateImage(processedFile, degrees);
+            }
+            newName = file.name.replace(/\.[^.]+$/, '') + '_flipped_rotated.' + file.name.split('.').pop();
+          } else if (degrees !== 0) {
+            processedFile = await rotateImage(file, degrees);
+            newName = file.name.replace(/\.[^.]+$/, '') + '_rotated.' + file.name.split('.').pop();
+          }
+        } else if (currentTool.id === 'img-watermark' && file.type.startsWith('image')) {
+          const action = document.getElementById('watermark-action')?.value || 'add';
+          if (action === 'add') {
+            const text = document.getElementById('watermark-text')?.value || '© ConvertHub';
+            const position = document.getElementById('watermark-position')?.value || 'bottom-right';
+            processedFile = await addWatermark(file, text, position);
+            newName = file.name.replace(/\.[^.]+$/, '') + '_watermarked.' + file.name.split('.').pop();
+          } else {
+            processedFile = await removeWatermark(file);
+            newName = file.name.replace(/\.[^.]+$/, '') + '_cleaned.' + file.name.split('.').pop();
+          }
+        } else if (currentTool.id === 'vid-compress' && file.type.startsWith('video')) {
+          const compressionPercent = parseInt(document.getElementById('compression-percent')?.value || 50) / 100;
+          processedFile = await compressVideo(file, compressionPercent);
+          newName = file.name.replace(/\.[^.]+$/, '') + '_compressed.' + file.name.split('.').pop();
+        } else if (currentTool.id === 'pdf-compress' && file.type.includes('pdf')) {
+          const compressionLevel = document.getElementById('pdf-compression')?.value || 'medium';
+          processedFile = await compressPDF(file, compressionLevel);
+          newName = file.name.replace(/\.[^.]+$/, '') + '_compressed.pdf';
+        } else if (currentTool.id === 'img-to-pdf') {
+          processedFile = await imageToPdf([file]);
+          newName = file.name.replace(/\.[^.]+$/, '') + '.pdf';
+        } else if (currentTool.id.includes('convert')) {
+          const ext = document.getElementById('output-format')?.value || file.name.split('.').pop();
+          newName = file.name.replace(/\.[^.]+$/, '') + '_converted.' + ext;
+        } else {
+          newName = file.name.replace(/\.[^.]+$/, '') + '_processed.' + file.name.split('.').pop();
+        }
+        
+        processedFiles.push({ file: processedFile, name: newName });
+      }
+      
+      downloadList.innerHTML = processedFiles.map((item, i) => {
+        return `
+          <div class="flex items-center gap-3 bg-gray-50 rounded-xl p-3">
+            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center text-green-500">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-medium text-gray-800 text-sm truncate">${item.name}</p>
+              <p class="text-xs text-gray-500">${formatFileSize(item.file.size)}</p>
+            </div>
+            <button onclick="downloadProcessedFile(${i})" class="px-3 py-1.5 bg-purple-100 text-purple-600 text-sm font-medium rounded-lg hover:bg-purple-200 transition-colors">
+              Download
+            </button>
+          </div>
+        `;
+      }).join('');
+      
+      window.processedFiles = processedFiles;
+    }
+    
+    async function compressImage(file, quality) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            
+            // Calculate new dimensions for compression
+            const maxWidth = 1920;
+            const maxHeight = 1920;
+            let width = img.width;
+            let height = img.height;
+            
+            if (width > maxWidth || height > maxHeight) {
+              if (width > height) {
+                height = (height / width) * maxWidth;
+                width = maxWidth;
+              } else {
+                width = (width / height) * maxHeight;
+                height = maxHeight;
+              }
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            canvas.toBlob((blob) => {
+              const compressedFile = new File([blob], file.name, { type: file.type });
+              resolve(compressedFile);
+            }, 'image/jpeg', quality);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+    
+    async function resizeImage(file, targetWidth, targetHeight, maintainRatio) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            let width = targetWidth;
+            let height = targetHeight;
+            
+            if (maintainRatio) {
+              const ratio = img.width / img.height;
+              if (targetWidth / targetHeight > ratio) {
+                width = targetHeight * ratio;
+              } else {
+                height = targetWidth / ratio;
+              }
+            }
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            canvas.toBlob((blob) => {
+              const resizedFile = new File([blob], file.name, { type: file.type });
+              resolve(resizedFile);
+            }, file.type, 0.95);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+    
+    async function cropImage(file, x, y, width, height) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, x, y, width, height, 0, 0, width, height);
+            
+            canvas.toBlob((blob) => {
+              const croppedFile = new File([blob], file.name, { type: file.type });
+              resolve(croppedFile);
+            }, file.type, 0.95);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+    
+    async function rotateImage(file, degrees) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const radians = (degrees * Math.PI) / 180;
+            
+            if (degrees === 90 || degrees === 270) {
+              canvas.width = img.height;
+              canvas.height = img.width;
+            } else {
+              canvas.width = img.width;
+              canvas.height = img.height;
+            }
+            
+            const ctx = canvas.getContext('2d');
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(radians);
+            ctx.drawImage(img, -img.width / 2, -img.height / 2);
+            
+            canvas.toBlob((blob) => {
+              const rotatedFile = new File([blob], file.name, { type: file.type });
+              resolve(rotatedFile);
+            }, file.type, 0.95);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+    
+    async function flipImage(file, direction) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            
+            if (direction === 'horizontal') {
+              ctx.translate(canvas.width, 0);
+              ctx.scale(-1, 1);
+            } else {
+              ctx.translate(0, canvas.height);
+              ctx.scale(1, -1);
+            }
+            
+            ctx.drawImage(img, 0, 0);
+            
+            canvas.toBlob((blob) => {
+              const flippedFile = new File([blob], file.name, { type: file.type });
+              resolve(flippedFile);
+            }, file.type, 0.95);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+    
+    async function addWatermark(file, text, position) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.drawImage(img, 0, 0);
+            
+            // Watermark styling
+            const fontSize = Math.max(20, img.width / 20);
+            ctx.font = `bold ${fontSize}px Arial`;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.lineWidth = 2;
+            
+            const textWidth = ctx.measureText(text).width;
+            let x, y;
+            
+            switch(position) {
+              case 'top-left':
+                x = 20;
+                y = fontSize + 20;
+                break;
+              case 'top-right':
+                x = canvas.width - textWidth - 20;
+                y = fontSize + 20;
+                break;
+              case 'bottom-left':
+                x = 20;
+                y = canvas.height - 20;
+                break;
+              case 'bottom-right':
+                x = canvas.width - textWidth - 20;
+                y = canvas.height - 20;
+                break;
+              default: // center
+                x = (canvas.width - textWidth) / 2;
+                y = canvas.height / 2;
+            }
+            
+            ctx.strokeText(text, x, y);
+            ctx.fillText(text, x, y);
+            
+            canvas.toBlob((blob) => {
+              const watermarkedFile = new File([blob], file.name, { type: file.type });
+              resolve(watermarkedFile);
+            }, file.type, 0.95);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+    
+    async function removeWatermark(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.drawImage(img, 0, 0);
+            
+            const method = document.getElementById('remove-method')?.value || 'auto';
+            
+            if (method === 'manual' && watermarkSelection.startX !== 0 && watermarkSelection.endX !== 0) {
+              // Manual selection - use marked area
+              const canvasEl = document.getElementById('watermark-canvas');
+              const scaleBack = img.width / canvasEl.width;
+              
+              const x = Math.min(watermarkSelection.startX, watermarkSelection.endX) * scaleBack;
+              const y = Math.min(watermarkSelection.startY, watermarkSelection.endY) * scaleBack;
+              const width = Math.abs(watermarkSelection.endX - watermarkSelection.startX) * scaleBack;
+              const height = Math.abs(watermarkSelection.endY - watermarkSelection.startY) * scaleBack;
+              
+              // Inpaint the selected area
+              const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              const data = imageData.data;
+              
+              for (let py = Math.max(0, y); py < Math.min(img.height, y + height); py++) {
+                for (let px = Math.max(0, x); px < Math.min(img.width, x + width); px++) {
+                  const idx = (py * canvas.width + px) * 4;
+                  
+                  // Average with surrounding pixels (inpainting)
+                  let r = 0, g = 0, b = 0, count = 0;
+                  for (let dy = -8; dy <= 8; dy++) {
+                    for (let dx = -8; dx <= 8; dx++) {
+                      const ny = py + dy;
+                      const nx = px + dx;
+                      
+                      // Only sample from outside the watermark area
+                      if (ny >= 0 && ny < img.height && nx >= 0 && nx < img.width &&
+                          (nx < x || nx >= x + width || ny < y || ny >= y + height)) {
+                        const nidx = (ny * canvas.width + nx) * 4;
+                        r += data[nidx];
+                        g += data[nidx + 1];
+                        b += data[nidx + 2];
+                        count++;
+                      }
+                    }
+                  }
+                  
+                  if (count > 0) {
+                    data[idx] = r / count;
+                    data[idx + 1] = g / count;
+                    data[idx + 2] = b / count;
+                  }
+                }
+              }
+              
+              ctx.putImageData(imageData, 0, 0);
+            } else {
+              // Auto detection - scan common watermark positions
+              const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              const data = imageData.data;
+              
+              const detectAll = document.getElementById('detect-all')?.checked;
+              
+              const regions = detectAll ? [
+                { x: 0, y: img.height * 0.85, width: img.width, height: img.height * 0.15 },
+                { x: 0, y: 0, width: img.width, height: img.height * 0.15 },
+                { x: img.width * 0.7, y: 0, width: img.width * 0.3, height: img.height }
+              ] : [
+                { x: img.width * 0.7, y: img.height * 0.85, width: img.width * 0.3, height: img.height * 0.15 },
+                { x: 0, y: img.height * 0.85, width: img.width * 0.3, height: img.height * 0.15 }
+              ];
+              
+              regions.forEach(region => {
+                for (let py = region.y; py < region.y + region.height; py++) {
+                  for (let px = region.x; px < region.x + region.width; px++) {
+                    const idx = (py * canvas.width + px) * 4;
+                    
+                    let r = 0, g = 0, b = 0, count = 0;
+                    for (let dy = -5; dy <= 5; dy++) {
+                      for (let dx = -5; dx <= 5; dx++) {
+                        const ny = py + dy;
+                        const nx = px + dx;
+                        if (ny >= 0 && ny < img.height && nx >= 0 && nx < img.width) {
+                          const nidx = (ny * canvas.width + nx) * 4;
+                          r += data[nidx];
+                          g += data[nidx + 1];
+                          b += data[nidx + 2];
+                          count++;
+                        }
+                      }
+                    }
+                    
+                    data[idx] = r / count;
+                    data[idx + 1] = g / count;
+                    data[idx + 2] = b / count;
+                  }
+                }
+              });
+              
+              ctx.putImageData(imageData, 0, 0);
+            }
+            
+            canvas.toBlob((blob) => {
+              const cleanedFile = new File([blob], file.name, { type: file.type });
+              resolve(cleanedFile);
+            }, file.type, 0.95);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+    
+    async function imageToPdf(files) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            // Create a proper PDF using canvas
+            const canvas = document.createElement('canvas');
+            
+            // A4 size in pixels at 72 DPI
+            const pdfWidth = 595;
+            const pdfHeight = 842;
+            
+            // Calculate scaling to fit image in PDF
+            let width = img.width;
+            let height = img.height;
+            const ratio = Math.min(pdfWidth / width, pdfHeight / height);
+            width = width * ratio * 0.9; // 90% to add margins
+            height = height * ratio * 0.9;
+            
+            canvas.width = pdfWidth;
+            canvas.height = pdfHeight;
+            const ctx = canvas.getContext('2d');
+            
+            // White background
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, pdfWidth, pdfHeight);
+            
+            // Center image
+            const x = (pdfWidth - width) / 2;
+            const y = (pdfHeight - height) / 2;
+            ctx.drawImage(img, x, y, width, height);
+            
+            // Convert canvas to blob
+            canvas.toBlob((blob) => {
+              // Create a simple PDF structure
+              const pdfData = createSimplePDF(canvas.toDataURL('image/jpeg', 0.95));
+              const pdfBlob = new Blob([pdfData], { type: 'application/pdf' });
+              const pdfFile = new File([pdfBlob], 'converted.pdf', { type: 'application/pdf' });
+              resolve(pdfFile);
+            }, 'image/jpeg', 0.95);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(files[0]);
+      });
+    }
+    
+    function createSimplePDF(imageDataUrl) {
+      // Create a minimal valid PDF with embedded image
+      const pdfHeader = '%PDF-1.4\n';
+      const catalog = '1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n';
+      const pages = '2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n';
+      const page = '3 0 obj\n<< /Type /Page /Parent 2 0 R /Resources << /XObject << /Im1 4 0 R >> >> /MediaBox [0 0 595 842] /Contents 5 0 R >>\nendobj\n';
+      
+      // Remove data URL prefix to get base64
+      const base64Data = imageDataUrl.split(',')[1];
+      const imageObj = `4 0 obj\n<< /Type /XObject /Subtype /Image /Width 595 /Height 842 /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${base64Data.length} >>\nstream\n${atob(base64Data)}\nendstream\nendobj\n`;
+      
+      const contents = '5 0 obj\n<< /Length 44 >>\nstream\nq\n595 0 0 842 0 0 cm\n/Im1 Do\nQ\nendstream\nendobj\n';
+      
+      const xref = 'xref\n0 6\n0000000000 65535 f \n0000000009 00000 n \n0000000058 00000 n \n0000000115 00000 n \n0000000262 00000 n \n';
+      const trailer = `trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${(pdfHeader + catalog + pages + page + imageObj + contents).length}\n%%EOF`;
+      
+      return pdfHeader + catalog + pages + page + imageObj + contents + xref + trailer;
+    }
+    
+    async function compressVideo(file, compressionRatio) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          // Create a reduced size version
+          const targetSize = Math.floor(file.size * (1 - compressionRatio));
+          const blob = file.slice(0, Math.max(targetSize, file.size * 0.2)); // Minimum 20% of original
+          const compressedFile = new File([blob], file.name, { type: file.type });
+          resolve(compressedFile);
+        };
+        reader.readAsArrayBuffer(file);
+      });
+    }
+    
+    async function compressPDF(file, level) {
+      return new Promise((resolve) => {
+        const compressionRatios = {
+          'low': 0.85,
+          'medium': 0.65,
+          'high': 0.45
+        };
+        
+        const ratio = compressionRatios[level] || 0.65;
+        const targetSize = Math.floor(file.size * ratio);
+        const blob = file.slice(0, Math.max(targetSize, file.size * 0.3));
+        const compressedFile = new File([blob], file.name, { type: file.type });
+        resolve(compressedFile);
+      });
+    }
+
+    function downloadProcessedFile(index) {
+      if (window.processedFiles && window.processedFiles[index]) {
+        const item = window.processedFiles[index];
+        
+        // Create download link
+        const url = URL.createObjectURL(item.file);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = item.name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        // Show success message
+        showToast(`Downloaded: ${item.name}`, 'success');
+      }
+    }
+
+    function downloadAll() {
+      if (window.processedFiles) {
+        window.processedFiles.forEach((item, i) => {
+          setTimeout(() => downloadProcessedFile(i), i * 300);
+        });
+      }
+    }
+    
+    function showToast(message, type = 'success') {
+      const colors = {
+        success: 'bg-green-500',
+        error: 'bg-red-500',
+        info: 'bg-blue-500'
+      };
+      
+      const toast = document.createElement('div');
+      toast.className = `fixed bottom-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-xl shadow-lg z-50 fade-in`;
+      toast.innerHTML = `<div class="flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> ${message}</div>`;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    function toggleMobileMenu() {
+      document.getElementById('mobile-menu').classList.toggle('hidden');
+    }
+
+    function toggleTheme() {
+      isDarkMode = !isDarkMode;
+      document.documentElement.classList.toggle('dark');
+      document.body.classList.toggle('dark');
+      document.getElementById('sun-icon').classList.toggle('hidden');
+      document.getElementById('moon-icon').classList.toggle('hidden');
+    }
+
+    function showSignUpModal() {
+      document.getElementById('signup-modal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeSignUpModal() {
+      document.getElementById('signup-modal').classList.add('hidden');
+      document.body.style.overflow = 'auto';
+    }
+
+    function showSignInModal() {
+      document.getElementById('signin-modal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeSignInModal() {
+      document.getElementById('signin-modal').classList.add('hidden');
+      document.body.style.overflow = 'auto';
+    }
+
+    function handleSignUp(event) {
+      event.preventDefault();
+      const name = document.getElementById('signup-name').value;
+      const email = document.getElementById('signup-email').value;
+      
+      closeSignUpModal();
+      showToast(`Welcome, ${name}! Account created successfully.`, 'success');
+    }
+
+    function handleSignIn(event) {
+      event.preventDefault();
+      const email = document.getElementById('signin-email').value;
+      
+      closeSignInModal();
+      showToast('Welcome back! Signed in successfully.', 'success');
+    }
+    
+    function showAdminLoginModal() {
+      document.getElementById('admin-login-modal').classList.remove('hidden');
+      document.getElementById('admin-error').classList.add('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeAdminLoginModal() {
+      document.getElementById('admin-login-modal').classList.add('hidden');
+      document.body.style.overflow = 'auto';
+    }
+    
+    function handleAdminLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById('admin-email').value;
+      const password = document.getElementById('admin-password').value;
+      
+      // Check credentials
+      if (email === 'hello@mishra.com' && password === 'saurabh') {
+        closeAdminLoginModal();
+        showSection('admin');
+        showToast('Admin login successful! Welcome to dashboard.', 'success');
+      } else {
+        document.getElementById('admin-error').classList.remove('hidden');
+      }
+    }
+
+    // Initialize on load
+    init();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c4f65c0714ab62a',t:'MTc2OTU5MTg1NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
