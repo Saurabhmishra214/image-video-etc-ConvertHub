@@ -7,7 +7,7 @@ export const Footer = () => {
       <div className={styles.container}>
         <div className={styles.grid}>
           <div className={styles.section}>
-            <h3 className="gradient-text">FileConvert Pro</h3>
+            <h3 className="gradient-text">EtcHub</h3>
             <p className={styles.description}>
               Free online tools for file conversion and editing. Fast, secure, and easy to use.
             </p>
@@ -56,7 +56,7 @@ export const Footer = () => {
         </div>
 
         <div className={styles.bottom}>
-          <p>&copy; 2024 FileConvert Pro. All rights reserved.</p>
+          <p>&copy; 2024 EtcHub. All rights reserved.</p>
           <p className={styles.security}>
             All files are processed securely and deleted after 24 hours
           </p>

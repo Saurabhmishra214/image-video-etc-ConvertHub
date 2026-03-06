@@ -30,8 +30,8 @@ declare global {
 }
 
 const defaultConfig: Config = {
-  headline: 'Premium Course Access Unlock करें! 🚀',
-  subheadline: 'Payment के तुरंत बाद Instant Access पाएं। कोई waiting नहीं!',
+  headline: 'Unlock Premium Course Access! 🚀',
+  subheadline: 'Get instant access immediately after payment. No waiting!',
   price_amount: '₹5',
   offer_name: 'Premium Access',
   upi_id: 'oosaurabh6@okicici',

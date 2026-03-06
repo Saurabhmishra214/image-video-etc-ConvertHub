@@ -18,7 +18,7 @@ export const Header = () => {
     <header className={styles.header}>
       <div className={styles.container}>
         <div className={styles.logo}>
-          <h1 className="gradient-text">FileConvert Pro</h1>
+          <h1 className="gradient-text">EtcHub</h1>
         </div>
 
         <nav className={`${styles.nav} ${mobileMenuOpen ? styles.navOpen : ''}`}>
