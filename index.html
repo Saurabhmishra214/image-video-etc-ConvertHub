@@ -1,12 +1,162 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ConvertHub</title>
-  </head>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Page</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Poppins', sans-serif; }
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    }
+    .card-glow {
+      box-shadow: 0 25px 50px -12px rgba(102, 126, 234, 0.4);
+    }
+    .pulse-animation {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.05); }
+    }
+    .float-animation {
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .shimmer {
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+      background-size: 200% 100%;
+      animation: shimmer 2s infinite;
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .whatsapp-btn {
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+      box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+    }
+    .whatsapp-btn:hover {
+      box-shadow: 0 12px 35px rgba(37, 211, 102, 0.6);
+      transform: translateY(-2px);
+    }
+    .copy-toast {
+      animation: slideUp 0.3s ease-out;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Desktop Layout */
+    @media (min-width: 1024px) {
+      .desktop-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; min-height: 100%; }
+      .mobile-layout { display: none; }
+      #app-wrapper { display: flex; align-items: center; justify-content: center; padding: 2rem; }
+    }
+    /* Mobile Layout */
+    @media (max-width: 1023px) {
+      .desktop-layout { display: none; }
+      .mobile-layout { display: flex; flex-direction: column; gap: 1rem; }
+      #app-wrapper { display: block; }
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+      <script>
+    const defaultConfig = {
+      headline: 'Premium Course Access Unlock करें! 🚀',
+      subheadline: 'Payment के तुरंत बाद Instant Access पाएं। कोई waiting नहीं!',
+      price_amount: '₹499',
+      offer_name: 'Premium Access',
+      upi_id: 'oosaurabh6@okicici',
+      background_color: '#667eea',
+      surface_color: '#ffffff',
+      text_color: '#1f2937',
+      primary_action_color: '#7c3aed',
+      secondary_action_color: '#25D366'
+    };
+
+    // Copy UPI functionality
+    document.getElementById('copy-btn').addEventListener('click', function() {
+      const upiId = document.getElementById('upi-id').textContent;
+      navigator.clipboard.writeText(upiId).then(() => {
+        const toast = document.getElementById('copy-toast');
+        const copyText = document.getElementById('copy-text');
+        
+        toast.classList.remove('hidden');
+        copyText.textContent = 'Copied!';
+        
+        setTimeout(() => {
+          toast.classList.add('hidden');
+          copyText.textContent = 'Copy';
+        }, 2000);
+      });
+    });
+
+    // Element SDK Integration
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          document.getElementById('headline').innerHTML = config.headline || defaultConfig.headline;
+          document.getElementById('subheadline').textContent = config.subheadline || defaultConfig.subheadline;
+          document.getElementById('price-amount').textContent = config.price_amount || defaultConfig.price_amount;
+          document.getElementById('offer-name').textContent = config.offer_name || defaultConfig.offer_name;
+          document.getElementById('upi-id').textContent = config.upi_id || defaultConfig.upi_id;
+        },
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            {
+              get: () => config.background_color || defaultConfig.background_color,
+              set: (value) => { config.background_color = value; window.elementSdk.setConfig({ background_color: value }); }
+            },
+            {
+              get: () => config.surface_color || defaultConfig.surface_color,
+              set: (value) => { config.surface_color = value; window.elementSdk.setConfig({ surface_color: value }); }
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (value) => { config.text_color = value; window.elementSdk.setConfig({ text_color: value }); }
+            },
+            {
+              get: () => config.primary_action_color || defaultConfig.primary_action_color,
+              set: (value) => { config.primary_action_color = value; window.elementSdk.setConfig({ primary_action_color: value }); }
+            },
+            {
+              get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+              set: (value) => { config.secondary_action_color = value; window.elementSdk.setConfig({ secondary_action_color: value }); }
+            }
+          ],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ['headline', config.headline || defaultConfig.headline],
+          ['subheadline', config.subheadline || defaultConfig.subheadline],
+          ['price_amount', config.price_amount || defaultConfig.price_amount],
+          ['offer_name', config.offer_name || defaultConfig.offer_name],
+          ['upi_id', config.upi_id || defaultConfig.upi_id]
+        ])
+      });
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d389a19543a8fa7',t:'MTc3MjAzNzE4MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+
   </body>
+
+
 </html>
