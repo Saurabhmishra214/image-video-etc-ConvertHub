@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "description": "YouTube Video & Audio Downloader with Node.js backend",
   "main": "./backend/server.js",
-  "scripts": {
-    "server": "node backend/server.js",
-    "client": "vite",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
-  },
+ "scripts": {
+  "server": "node backend/server.js",
+  "client": "vite",
+  "dev": "concurrently \"npm run server\" \"npm run client\"",
+  "build": "vite build",
+  "preview": "vite preview"
+},
   "keywords": [
     "youtube",
     "downloader",
