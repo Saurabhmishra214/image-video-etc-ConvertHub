@@ -15,8 +15,8 @@ function App() {
     <ThemeProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={defaultPageElement} />
-          <Route path="/home" element={<HomePage />} />
+          <Route path="/home" element={defaultPageElement} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/landing" element={<LandingPage />} />
           <Route path="/live" element={<LiveMatchPage />} />
           <Route path="/join" element={<JoinPage />} />
